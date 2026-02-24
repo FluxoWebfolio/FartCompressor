@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 192 66.4">
+  <defs>
+    <linearGradient id="linear-gradient" x1="96.05" y1="26.6" x2="96.05" y2="65.8" gradientTransform="translate(0 68) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0045c8"/>
+      <stop offset=".7" stop-color="#00c2ff"/>
+    </linearGradient>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.6.0, SVG Export Plug-In . SVG Version: 1.2.0 Build 709)  -->
+  <g>
+    <g id="Layer_1">
+      <g id="Object_x5F_ON">
+        <g>
+          <rect x="19.2" y="17.7" width="153.7" height="31.1" rx="15.5" ry="15.5" fill="url(#linear-gradient)"/>
+          <image width="893" height="381" transform="translate(-10.94 -21.83) scale(.24 .29)" xlink:href="BT_Compress-1.png" isolation="isolate"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 206 231">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        fill: none;
+      }
+
+      .cls-2, .cls-4, .cls-3, .cls-5 {
+        stroke: #000;
+        stroke-width: 7.1px;
+      }
+
+      .cls-2, .cls-3 {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .cls-4 {
+        fill: #fff;
+      }
+
+      .cls-4, .cls-5 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-6 {
+        fill: #ffc131;
+      }
+
+      .cls-3 {
+        stroke-dasharray: 12.8 12.8 12.8 12.8;
+      }
+
+      .cls-7 {
+        fill: #24c8db;
+      }
+
+      .cls-5 {
+        fill: #8c6e5d;
+      }
+    </style>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.6.0, SVG Export Plug-In . SVG Version: 1.2.0 Build 709)  -->
+  <g>
+    <g id="Layer_1">
+      <path class="cls-6" d="M143.1,84c0,12.2-9.9,22-22,22s-22-9.8-22-22,9.8-22,22-22,22,9.8,22,22Z"/>
+      <circle class="cls-7" cx="84.1" cy="147" r="22"/>
+      <g id="Layer_1-2" data-name="Layer_1">
+        <g>
+          <path class="cls-4" d="M61.8,22.1c-27,0-49.7,34.1-49.7,78.2s22.7,78.2,49.7,78.2h81V22.1s-81,0-81,0Z"/>
+          <ellipse class="cls-4" cx="144.2" cy="98.9" rx="49.7" ry="78.2"/>
+          <ellipse class="cls-5" cx="144.2" cy="98.9" rx="18.5" ry="28.4"/>
+          <polyline class="cls-4" points="93.1 98.9 93.1 206.9 71.7 194.1 51.8 206.9 31.9 194.1 12 206.9 12 98.9"/>
+          <g>
+            <line class="cls-1" x1="107.3" y1="46.3" x2="26.3" y2="46.3"/>
+            <g>
+              <line class="cls-2" x1="107.3" y1="46.3" x2="100.2" y2="46.3"/>
+              <line class="cls-3" x1="85.9" y1="46.3" x2="40.5" y2="46.3"/>
+              <line class="cls-2" x1="33.4" y1="46.3" x2="26.3" y2="46.3"/>
+            </g>
+          </g>
+          <g>
+            <line class="cls-1" x1="12" y1="127.3" x2="93.1" y2="127.3"/>
+            <g>
+              <line class="cls-2" x1="12" y1="127.3" x2="20.6" y2="127.3"/>
+              <line class="cls-3" x1="33.4" y1="127.3" x2="78.8" y2="127.3"/>
+              <line class="cls-2" x1="85.9" y1="127.3" x2="93.1" y2="127.3"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

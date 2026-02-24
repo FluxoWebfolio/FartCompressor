@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 256 64.34">
+  <defs>
+    <radialGradient id="radial-gradient" cx="81.1" cy="43.37" fx="81.1" fy="43.37" r="11.24" gradientTransform="translate(160.31 7.89) rotate(135) scale(1 .71)" gradientUnits="userSpaceOnUse">
+      <stop offset=".26" stop-color="#1a1a1a"/>
+      <stop offset="1" stop-color="#1a1a1a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="linear-gradient" x1="-1109.02" y1="941.97" x2="-1095.02" y2="941.97" gradientTransform="translate(196.97 -1404.99) rotate(-45)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".05" stop-color="#f8f8f8"/>
+      <stop offset=".13" stop-color="#e7e7e7"/>
+      <stop offset=".21" stop-color="#cbcbcb"/>
+      <stop offset=".3" stop-color="#a3a3a3"/>
+      <stop offset=".4" stop-color="#707070"/>
+      <stop offset=".5" stop-color="#333"/>
+      <stop offset=".57" stop-color="#5a5a5a"/>
+      <stop offset=".68" stop-color="#949494"/>
+      <stop offset=".78" stop-color="#c2c2c2"/>
+      <stop offset=".87" stop-color="#e3e3e3"/>
+      <stop offset=".95" stop-color="#f7f7f7"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="-2585.08" y1="741.03" x2="-2571.08" y2="741.03" gradientTransform="translate(-657.23 -2537.76) rotate(-90)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1a1a1a"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="79.8" y1="36.32" x2="87.9" y2="44.42" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#linear-gradient-2"/>
+    <linearGradient id="linear-gradient-4" x1="83.8" y1="37.63" x2="83.8" y2="42.99" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#333"/>
+      <stop offset=".86" stop-color="#070707" stop-opacity=".15"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.6.0, SVG Export Plug-In . SVG Version: 1.2.0 Build 709)  -->
+  <g isolation="isolate">
+    <g id="Layer_1">
+      <path id="Slider-track-base" d="M232.94,22.44h-72.16c-3.56,0-6.77-2.16-8.12-5.46l-2.19-5.37c-1.34-3.3-4.55-5.46-8.12-5.46h-28.71c-3.56,0-6.77,2.16-8.12,5.46l-2.19,5.37c-1.34,3.3-4.55,5.46-8.12,5.46H23.06c-9.92,0-18.35,8.12-18.16,18.04.18,9.62,8.03,17.36,17.7,17.36h210.8c9.66,0,17.52-7.74,17.7-17.36.19-9.92-8.24-18.04-18.16-18.04ZM147.37,19.04c0,2.88-2.33,5.21-5.21,5.21h-28.32c-2.88,0-5.21-2.33-5.21-5.21v-4.82c0-2.88,2.33-5.21,5.21-5.21h28.32c2.88,0,5.21,2.33,5.21,5.21v4.82Z" fill="#e1e6e6"/>
+      <rect id="label-compression" x="13.47" y="28.49" width="57.44" height="23.4" fill="none"/>
+      <rect id="label-percentage" x="108.63" y="9.02" width="38.74" height="15.39" fill="none"/>
+      <rect id="label-quality" x="185.09" y="28.49" width="57.44" height="23.4" fill="none"/>
+      <path id="slider-fill-right" d="M83.8,37.44h85.5c1.66,0,3,1.34,3,3h0c0,1.66-1.34,3-3,3h-85.5v-6Z" fill="#1a1a1a"/>
+      <path id="slider-fill-left" d="M83.8,43.44h0c-1.66,0-3-1.34-3-3h0c0-1.66,1.34-3,3-3h0v6Z" fill="#0078ff"/>
+      <g id="slider-thumb">
+        <circle cx="79.64" cy="44.98" r="11.06" fill="url(#radial-gradient)"/>
+        <g>
+          <circle cx="83.8" cy="40.32" r="7" fill="url(#linear-gradient)"/>
+          <circle cx="83.8" cy="40.32" r="7" fill="url(#linear-gradient-2)"/>
+          <circle cx="83.8" cy="40.32" r="7" fill="url(#linear-gradient-2)" mix-blend-mode="screen"/>
+          <circle cx="83.8" cy="40.32" r="4.95" fill="url(#linear-gradient-3)" mix-blend-mode="screen"/>
+          <circle cx="83.8" cy="40.32" r="4.02" fill="#1a1a1a"/>
+          <circle cx="83.8" cy="40.32" r="3.5" fill="url(#linear-gradient-4)" mix-blend-mode="screen"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

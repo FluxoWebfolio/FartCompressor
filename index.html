@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FartCompressor</title>
+  <link rel="stylesheet" href="/src/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="h-screen flex flex-col items-center justify-center select-none bg-[#f0f5f5]">
+
+  <!-- Global Drop Zone Overlay -->
+  <div id="dropOverlay"
+    class="absolute inset-0 bg-fart-blue/20 backdrop-blur-sm z-50 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-white p-8 rounded-[28px] shadow-2xl transform scale-110">
+      <p class="text-2xl font-bold text-fart-blue uppercase tracking-wider">Larga aqui os teus peidos!</p>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="w-full h-full flex flex-col relative">
+
+    <!-- 1. Header Image (Fixed height ratio) -->
+    <div class="relative w-full h-[35%] max-h-[240px] bg-gray-200 overflow-hidden shrink-0">
+      <img src="/src/assets/header_bg.png" alt="Header" class="w-full h-full object-cover">
+      <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#f0f5f5] to-transparent hidden"></div>
+    </div>
+
+    <!-- 2. Main Content Area (Controls the layout flow) -->
+    <div class="flex-1 min-h-0 flex flex-col px-8 pt-[10px] pb-[44px] relative" style="overflow: visible;">
+
+      <!-- Top Section: Toggles & Slider (Fixed height) -->
+      <div class="shrink-0 space-y-5 mb-5">
+        <!-- Toggles Row -->
+        <div class="flex justify-center items-start h-auto" style="gap: 70px;">
+          <div class="flex flex-col items-center">
+            <div id="autoCompressToggle" class="h-[52px] w-[80px] overflow-visible cursor-pointer select-none"
+              data-state="off"></div>
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px]">Comprimir Auto</span>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <div id="overwriteToggle" class="h-[52px] w-[80px] overflow-visible cursor-pointer select-none"
+              data-state="off"></div>
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px]">MÁX COMP | TRUE
+              TONE</span>
+          </div>
+        </div>
+
+        <!-- Quality Slider -->
+        <div class="w-full relative h-[72px]">
+          <div class="absolute left-[23px] top-[45px] -translate-y-1/2 flex flex-col pointer-events-none z-10">
+            <span class="text-[11px] font-bold text-black uppercase tracking-wider">Compressão</span>
+            <span class="text-[9px] font-bold text-gray-400 text-right -mt-[1px]">Bufa ultra-leve!</span>
+          </div>
+          <div id="qualitySliderContainer" class="w-full h-full relative"></div>
+          <div class="absolute right-[23px] top-[45px] -translate-y-1/2 flex flex-col pointer-events-none z-10">
+            <span class="text-[11px] font-bold text-black uppercase tracking-wider">Qualidade</span>
+            <span class="text-[9px] font-bold text-gray-400 text-left -mt-[1px]">Bufa com classe!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Section: File List (Flexible, the only part that scrolls) -->
+      <div class="flex-1 min-h-0 flex flex-col mb-5 relative z-10"
+        style="box-shadow: 0 2px 25px rgba(0,0,0,0.45); border-radius: 28px;">
+        <!-- White File List Window -->
+        <div class="flex-1 min-h-0 bg-white border-b border-gray-100 flex flex-col relative rounded-t-[28px]">
+          <div
+            class="bg-[#e6ebeb] rounded-t-[28px] px-3 py-[6px] grid grid-cols-12 gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 items-center">
+            <div class="col-span-5 flex items-center gap-2">
+              <div id="clearListBtn"
+                class="relative cursor-pointer rounded-md transition-all duration-200 hover:bg-red-500/80 p-[2px]"
+                title="Limpar lista">
+                <img src="/src/assets/IconFolder.svg" alt="Limpar Lista" width="32" height="32" class="select-none">
+              </div>
+              <span>Ficheiro</span>
+            </div>
+            <div class="col-span-1 text-right flex items-center justify-end"></div>
+            <div class="col-span-2 text-right flex items-center justify-end">Antes</div>
+            <div class="col-span-2 text-right flex items-center justify-end">Depois</div>
+            <div class="col-span-2 text-right flex items-center justify-end">(%)</div>
+          </div>
+
+          <!-- Scrollable Area -->
+          <div class="overflow-y-auto flex-1 p-0 no-scrollbar relative" id="fileListContainer">
+            <div id="emptyState"
+              class="absolute inset-0 flex flex-col items-center justify-center text-gray-300 pointer-events-none">
+              <svg class="w-12 h-12 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+              <p class="text-xs font-medium">Larga os ficheiros aqui</p>
+            </div>
+            <div id="filesList" class="">
+              <!-- Items will be injected here -->
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="shrink-0 bg-black text-white p-3 grid grid-cols-12 gap-2 text-[13px] font-black items-center z-10 tracking-tight rounded-b-[28px]">
+          <div class="col-span-5 pl-2">TOTAL</div>
+          <div class="col-span-1"></div>
+          <div class="col-span-2 text-right" id="totalOriginalSize">0 B</div>
+          <div class="col-span-2 text-right flex justify-end items-center gap-2">
+            <span class="text-[#10b981] font-bold">➜</span>
+            <span id="totalCompressedSize" class="text-[13px]">--</span>
+          </div>
+          <div class="col-span-2 text-right text-[13px]" id="totalSavings">--</div>
+        </div>
+      </div>
+
+      <!-- Bottom Section: Compress Button & Progress Bar (Fixed at very bottom) -->
+      <div class="relative z-50 shrink-0 flex flex-col items-center -mx-8 px-8 bg-[#f0f5f5]">
+        <!-- Extra spacing for the button, moved visually up over the shadow -->
+        <div class="w-full flex justify-center mt-[-25px] pb-[10px]">
+          <button id="compressBtn"
+            class="group relative cursor-pointer border-none bg-transparent p-0 transition-transform active:scale-95 focus:outline-none">
+            <!-- Inlined SVG for button appearance -->
+            <svg class="h-[119px] w-auto transition-all group-hover:brightness-110"
+              style="filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.3));" xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 192 66.4">
+              <defs>
+                <linearGradient id="linear-gradient" x1="96.05" y1="26.6" x2="96.05" y2="65.8"
+                  gradientTransform="translate(0 68) scale(1 -1)" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#0045c8" />
+                  <stop offset=".7" stop-color="#00c2ff" />
+                </linearGradient>
+              </defs>
+              <g>
+                <rect fill="url(#linear-gradient)" x="19.2" y="17.7" width="153.7" height="31.1" rx="15.5" ry="15.5" />
+                <image width="896" height="381" transform="translate(-11.2 -16.2) scale(.2)"
+                  xlink:href="/src/assets/BT_Compress-1.png" />
+              </g>
+            </svg>
+
+            <!-- Default Content: Text & Icon -->
+            <div id="compressContent"
+              class="absolute inset-0 flex items-center justify-center gap-2 text-white font-black text-lg uppercase tracking-widest shadow-black drop-shadow-md">
+              <span>COMPRIMIR</span>
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z">
+                </path>
+              </svg>
+            </div>
+
+            <!-- Overlay for Loading/Squeezing State -->
+            <div id="compressOverlay"
+              class="absolute inset-0 flex items-center justify-center gap-2 text-white font-black text-lg uppercase tracking-widest opacity-0 transition-opacity pointer-events-none">
+              <!-- Content injected by JS -->
+            </div>
+          </button>
+        </div>
+
+        <!-- Progress Section: The absolute bottom of the screen -->
+        <div class="w-full">
+          <div class="bg-gray-200 h-2 w-full">
+            <div id="progressBar" class="bg-fart-blue h-full w-0 transition-all duration-300"></div>
+          </div>
+          <div class="bg-white py-1 text-center">
+            <p id="statusMessage" class="text-[11px] text-gray-400 font-bold uppercase tracking-tighter">
+              0% de compressão...
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Hidden Input -->
+  <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

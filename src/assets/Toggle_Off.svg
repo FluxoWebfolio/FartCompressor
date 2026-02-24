@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 46.92 28">
+  <defs>
+    <linearGradient id="linear-gradient" x1="23.47" y1="1922.7" x2="23.47" y2="1905.3" gradientTransform="translate(0 -1900)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ccc"/>
+      <stop offset=".5" stop-color="#f7f7f7"/>
+      <stop offset=".7" stop-color="#ebebeb"/>
+      <stop offset="1" stop-color="#ccc"/>
+      <stop offset="1" stop-color="#ccc"/>
+    </linearGradient>
+    <radialGradient id="radial-gradient" cx="14" cy="1904" fx="14" fy="1904" r="14" gradientTransform="translate(0 -1890)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#cf3"/>
+      <stop offset="0" stop-color="#ceff3d"/>
+      <stop offset=".3" stop-color="#d5ff58" stop-opacity=".8"/>
+      <stop offset=".5" stop-color="#e0ff84" stop-opacity=".6"/>
+      <stop offset=".7" stop-color="#efffbf" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="radial-gradient-2" cx="-416.28" cy="-2951.4" fx="-416.28" fy="-2951.4" r="8.9" gradientTransform="translate(-1743.24 -1150.74) rotate(135) scale(1 .7)" gradientUnits="userSpaceOnUse">
+      <stop offset=".3" stop-color="#1a1a1a"/>
+      <stop offset="1" stop-color="#1a1a1a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="linear-gradient-2" x1="-2964.27" y1="3530.7" x2="-2953.67" y2="3530.7" gradientTransform="translate(-390.05 -4575.19) rotate(-45)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="0" stop-color="#f8f8f8"/>
+      <stop offset="0" stop-color="#e7e7e7"/>
+      <stop offset=".2" stop-color="#cbcbcb"/>
+      <stop offset=".3" stop-color="#a3a3a3"/>
+      <stop offset=".4" stop-color="#707070"/>
+      <stop offset=".5" stop-color="#333"/>
+      <stop offset=".6" stop-color="#5a5a5a"/>
+      <stop offset=".7" stop-color="#949494"/>
+      <stop offset=".8" stop-color="#c2c2c2"/>
+      <stop offset=".9" stop-color="#e3e3e3"/>
+      <stop offset=".9" stop-color="#f7f7f7"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="-6209.98" y1="2571.7" x2="-6199.38" y2="2571.7" gradientTransform="translate(-2557.48 -6190.98) rotate(-90)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1a1a1a"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-4" x1="11.12" y1="1910.6" x2="17.32" y2="1916.8" gradientTransform="translate(0 -1900)" xlink:href="#linear-gradient-3"/>
+    <linearGradient id="linear-gradient-5" x1="14.22" y1="1911.7" x2="14.22" y2="1915.8" gradientTransform="translate(0 -1900)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#333"/>
+      <stop offset=".9" stop-color="#070707" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.6.0, SVG Export Plug-In . SVG Version: 1.2.0 Build 709)  -->
+  <g isolation="isolate">
+    <g id="Layer_1">
+      <g id="Base_x5F_Toggle_x5F_OFF">
+        <g isolation="isolate">
+          <g id="Object_x5F_Off">
+            <g id="Toggle_x5F_Base_x5F_Off">
+              <rect x="4.92" y="4.7" width="37.1" height="18.1" rx="9" ry="9" fill="url(#linear-gradient)" isolation="isolate" opacity=".5"/>
+              <rect x="7.52" y="7.1" width="31.8" height="13.3" rx="6.6" ry="6.6" fill="#1a1a1a"/>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="Toggle_x5F_OFF">
+        <g id="Toggle_x5F_OFF-2" data-name="Toggle_x5F_OFF">
+          <circle cx="14" cy="14" r="14" fill="url(#radial-gradient)" opacity="0"/>
+          <circle cx="10.82" cy="16.9" r="8.8" fill="url(#radial-gradient-2)"/>
+          <circle cx="14.22" cy="13.7" r="5.3" fill="url(#linear-gradient-2)"/>
+          <circle cx="14.22" cy="13.7" r="5.3" fill="url(#linear-gradient-3)"/>
+          <circle cx="14.22" cy="13.7" r="5.3" fill="url(#linear-gradient-3)" isolation="isolate" mix-blend-mode="screen"/>
+          <circle cx="14.22" cy="13.7" r="3.8" fill="url(#linear-gradient-4)" isolation="isolate" mix-blend-mode="screen"/>
+          <circle cx="14.22" cy="13.7" r="3" fill="#1a1a1a"/>
+          <circle cx="14.22" cy="13.7" r="2.7" fill="url(#linear-gradient-5)" isolation="isolate" mix-blend-mode="screen"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

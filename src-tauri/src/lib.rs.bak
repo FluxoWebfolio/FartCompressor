@@ -1,0 +1,148 @@
+use std::path::Path;
+use std::process::Command;
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
+struct FileInfo {
+    name: String,
+    size: u64,
+    path: String,
+    format: String,
+}
+
+#[derive(Debug, Serialize)]
+struct CompressResult {
+    path: String,
+    original_size: u64,
+    compressed_size: u64,
+    success: bool,
+    error: Option<String>,
+}
+
+#[tauri::command]
+fn get_file_info(path: String) -> Result<FileInfo, String> {
+    let file_path = Path::new(&path);
+
+    if !file_path.exists() {
+        return Err(format!("File not found: {}", path));
+    }
+
+    let metadata = std::fs::metadata(&path)
+        .map_err(|e| format!("Error reading metadata: {}", e))?;
+
+    let name = file_path
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or("Unknown")
+        .to_string();
+
+    let extension = file_path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("")
+        .to_lowercase();
+
+    Ok(FileInfo {
+        name,
+        size: metadata.len(),
+        path,
+        format: extension,
+    })
+}
+
+#[tauri::command]
+async fn compress_files(files: Vec<String>, quality: u8) -> Result<Vec<CompressResult>, String> {
+    println!("🎬 Starting compression with FFmpeg/SVT-AV1");
+    println!("   Files: {}, Quality: {}", files.len(), quality);
+    
+    // Check if FFmpeg is available
+    match Command::new("ffmpeg").arg("-version").output() {
+        Ok(_) => println!("   ✅ FFmpeg detected"),
+        Err(_) => {
+            return Err("FFmpeg not found. Please install FFmpeg with SVT-AV1 support.".to_string());
+        }
+    }
+    
+    let mut results = Vec::new();
+
+    for path_str in files {
+        let path = Path::new(&path_str);
+        
+        let original_size = match std::fs::metadata(path) {
+            Ok(m) => m.len(),
+            Err(_) => 0,
+        };
+
+        match compress_with_ffmpeg(path, quality) {
+            Ok((_new_path, new_size)) => {
+                results.push(CompressResult {
+                    path: path_str.clone(), // Use original path, not new_path
+                    original_size,
+                    compressed_size: new_size,
+                    success: true,
+                    error: None,
+                });
+            },
+            Err(e) => {
+                results.push(CompressResult {
+                    path: path_str.clone(),
+                    original_size,
+                    compressed_size: 0,
+                    success: false,
+                    error: Some(e),
+                });
+            }
+        }
+    }
+
+    Ok(results)
+}
+
+fn compress_with_ffmpeg(input_path: &Path, quality: u8) -> Result<(String, u64), String> {
+    println!("📝 Processing: {:?}", input_path.file_name().unwrap_or_default());
+    
+    // Map quality slider (10-100) to CRF (51-15)
+    // Lower CRF = better quality, higher file size
+    // CRF 15 = excellent quality, CRF 51 = poor quality
+    let crf = 51 - ((quality as f32 / 100.0) * 36.0) as u8;
+    
+    println!("   ↳ Using CRF {} (quality {}%)", crf, quality);
+
+    let output_path = input_path.with_extension("avif");
+    
+    // FFmpeg command matching user's Automator app
+    let output = Command::new("ffmpeg")
+        .args(&[
+            "-i", input_path.to_str().unwrap(),
+            "-c:v", "libsvtav1",   // SVT-AV1 encoder (fast!)
+            "-preset", "10",        // Fastest preset (0-13, higher=faster)
+            "-crf", &crf.to_string(),
+            "-y",                   // Overwrite without asking
+            output_path.to_str().unwrap()
+        ])
+        .output()
+        .map_err(|e| format!("FFmpeg execution failed: {}", e))?;
+
+    if !output.status.success() {
+        let error_msg = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("FFmpeg error: {}", error_msg));
+    }
+
+    // Get output file size
+    let size = std::fs::metadata(&output_path)
+        .map_err(|e| format!("Failed to read output file: {}", e))?
+        .len();
+    
+    println!("   ✅ Saved to: {:?} ({} bytes)", output_path.file_name().unwrap_or_default(), size);
+    
+    Ok((output_path.to_string_lossy().to_string(), size))
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![get_file_info, compress_files])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
