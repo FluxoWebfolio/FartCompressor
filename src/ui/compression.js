@@ -1,4 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
+import { convertFileSrc } from '@tauri-apps/api/core';
+import * as avif from '@jsquash/avif';
+import * as jpeg from '@jsquash/jpeg';
 import { initSlider } from './slider-component.js';
 
 let currentQuality = 75;
@@ -89,11 +92,53 @@ export async function startCompression() {
             const trueToneToggle = document.getElementById('overwriteToggle');
             const isTrueTone = trueToneToggle ? trueToneToggle.getAttribute('data-state') === 'on' : false;
 
-            const result = await invoke('compress_single_file', {
-                path: file.path,
-                quality: quality,
-                trueTone: isTrueTone
-            });
+            // Check if it's a video file based on common extensions
+            const isVideo = /\.(mp4|mov|avi|mkv|webm|flv)$/i.test(file.path);
+
+            let result;
+
+            if (isVideo) {
+                // Video compression via backend FFmpeg Sidecar
+                result = await invoke('compress_video_ffmpeg', { path: file.path });
+            } else {
+                // Decode original image into raw pixel data via browser Canvas
+                // Fetch binary bytes directly from Tauri backend to prevent CORS / Unsupported URL issues
+                const rawBytes = await invoke('read_file_to_bytes', { path: file.path });
+                const blob = new Blob([new Uint8Array(rawBytes)]);
+                const bitmap = await createImageBitmap(blob);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = bitmap.width;
+                canvas.height = bitmap.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(bitmap, 0, 0);
+                const imgData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+
+                // Image compression via client-side WASM
+                let compressedBuffer;
+                let ext;
+
+                if (isTrueTone) {
+                    // mozjpeg expects quality 1-100
+                    compressedBuffer = await jpeg.encode(imgData, { quality });
+                    ext = "jpg";
+                } else {
+                    // avif CQ level mapping: higher slider quality = lower CQ (better quality)
+                    // CQ range: 0 (lossless) to 63 (lowest). Default is 33.
+                    const cqLevel = Math.round(63 - (quality / 100) * 63);
+                    compressedBuffer = await avif.encode(imgData, { cqLevel, speed: 6 });
+                    ext = "avif";
+                }
+
+                // Send raw binary to Tauri backend just to save to disk
+                const bytesArray = Array.from(new Uint8Array(compressedBuffer));
+
+                result = await invoke('save_compressed_file', {
+                    path: file.path,
+                    bytes: bytesArray,
+                    extension: ext
+                });
+            }
 
             // Stop timer and show final state
             if (progressTimer) clearInterval(progressTimer);
