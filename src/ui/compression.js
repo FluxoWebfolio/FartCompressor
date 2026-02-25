@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import * as avif from '@jsquash/avif';
 import * as jpeg from '@jsquash/jpeg';
+import resize from '@jsquash/resize';
 import { initSlider } from './slider-component.js';
 
 let currentQuality = 75;
@@ -112,7 +113,30 @@ export async function startCompression() {
                 canvas.height = bitmap.height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(bitmap, 0, 0);
-                const imgData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+                let imgData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+
+                // Check for resize input
+                const resizeInput = document.getElementById('resizeWidth');
+                const targetWidth = parseInt(resizeInput.value, 10);
+
+                if (!isNaN(targetWidth) && targetWidth > 0 && targetWidth !== imgData.width) {
+                    const aspectRatio = imgData.width / imgData.height;
+                    const targetHeight = Math.max(1, Math.round(targetWidth / aspectRatio));
+
+                    statusMsg.textContent = `A redimensionar (${targetWidth}x${targetHeight})...`;
+
+                    try {
+                        // Use highest quality Lanczos3 for downscaling
+                        imgData = await resize(imgData, {
+                            width: targetWidth,
+                            height: targetHeight,
+                            method: 'lanczos3'
+                        });
+                    } catch (err) {
+                        console.error('Resize falhou, a usar o tamanho original:', err);
+                        statusMsg.textContent = `Erro ao redimensionar...`;
+                    }
+                }
 
                 // Image compression via client-side WASM
                 let compressedBuffer;

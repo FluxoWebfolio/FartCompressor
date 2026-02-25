@@ -34,18 +34,31 @@
       <!-- Top Section: Toggles & Slider (Fixed height) -->
       <div class="shrink-0 space-y-5 mb-5">
         <!-- Toggles Row -->
-        <div class="flex justify-center items-start h-auto" style="gap: 70px;">
-          <div class="flex flex-col items-center">
+        <div class="flex justify-center items-start h-auto" style="gap: 50px;">
+          <div class="flex flex-col items-center w-[80px]">
             <div id="autoCompressToggle" class="h-[52px] w-[80px] overflow-visible cursor-pointer select-none"
               data-state="off"></div>
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px]">Comprimir Auto</span>
+            <span
+              class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px] whitespace-nowrap">Comprimir
+              Auto</span>
           </div>
 
-          <div class="flex flex-col items-center">
+          <!-- Redimensionar Largura Input -->
+          <div class="flex flex-col items-center justify-center w-[80px]">
+            <div class="h-[52px] flex items-center justify-center">
+              <input type="number" id="resizeWidth" placeholder="Auto"
+                class="w-[70px] h-[32px] bg-white border-2 border-transparent rounded-[12px] text-center text-[13px] font-bold text-fart-blue shadow-[0_2px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:border-fart-blue transition-all placeholder:text-gray-300 placeholder:font-semibold"
+                min="10">
+            </div>
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[5px]">Largura px</span>
+          </div>
+
+          <div class="flex flex-col items-center w-[80px]">
             <div id="overwriteToggle" class="h-[52px] w-[80px] overflow-visible cursor-pointer select-none"
               data-state="off"></div>
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px]">MÁX COMP | TRUE
-              TONE</span>
+            <span
+              class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px] text-center leading-[11px]">MÁX
+              COMP<br>TRUE TONE</span>
           </div>
         </div>
 

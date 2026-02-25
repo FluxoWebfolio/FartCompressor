@@ -16,20 +16,37 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc
-          
+
+      - name: Install Tauri Prerequisites (WebView2)
+        run: |
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/p/?LinkId=2124703" -OutFile "MicrosoftEdgeWebview2Setup.exe"
+          Start-Process -FilePath "MicrosoftEdgeWebview2Setup.exe" -ArgumentList "/silent /install" -Wait
+        shell: pwsh
+
       - name: Install Frontend Dependencies
         run: npm install
 
       - name: Build Tauri App
         run: npx tauri build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ""
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
 
-      - name: Upload Windows Bundle
+      - name: Upload Windows Installer (.msi)
         uses: actions/upload-artifact@v4
         with:
-          name: FartCompressor-Windows-Build
-          path: src-tauri/target/release/bundle/
+          name: FartCompressor-Windows-Installer
+          path: src-tauri/target/release/bundle/msi/*.msi
+          if-no-files-found: warn
+
+      - name: Upload Windows Executable (.exe)
+        uses: actions/upload-artifact@v4
+        with:
+          name: FartCompressor-Windows-EXE
+          path: src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: warn
