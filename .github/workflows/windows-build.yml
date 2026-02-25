@@ -22,10 +22,13 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
-      - name: Install Tauri Prerequisites (WebView2)
+      - name: Download FFmpeg for Windows
         run: |
-          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/p/?LinkId=2124703" -OutFile "MicrosoftEdgeWebview2Setup.exe"
-          Start-Process -FilePath "MicrosoftEdgeWebview2Setup.exe" -ArgumentList "/silent /install" -Wait
+          New-Item -ItemType Directory -Force -Path "src-tauri\binaries"
+          Invoke-WebRequest -Uri "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip" -OutFile "ffmpeg-win.zip"
+          Expand-Archive -Path "ffmpeg-win.zip" -DestinationPath "ffmpeg-extracted" -Force
+          Copy-Item "ffmpeg-extracted\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe" -Destination "src-tauri\binaries\ffmpeg-x86_64-pc-windows-msvc.exe"
+          Remove-Item -Recurse -Force "ffmpeg-win.zip", "ffmpeg-extracted"
         shell: pwsh
 
       - name: Install Frontend Dependencies
