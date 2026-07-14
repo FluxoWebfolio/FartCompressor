@@ -24,8 +24,16 @@
 
     <!-- 1. Header Image (Fixed height ratio) -->
     <div class="relative w-full h-[35%] max-h-[240px] bg-gray-200 overflow-hidden shrink-0">
-      <img src="/src/assets/header_bg.png" alt="Header" class="w-full h-full object-cover">
+      <img id="headerImage" src="/src/assets/header_bg.png" alt="Header" class="w-full h-full object-cover">
       <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#f0f5f5] to-transparent hidden"></div>
+
+      <!-- Update available banner (hidden by default; shown by update-check.js) -->
+      <div id="updateBanner"
+        class="hidden absolute top-2 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-black/80 backdrop-blur-sm text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+        <span id="updateBannerText">Nova versão disponível</span>
+        <button id="updateBannerBtn"
+          class="bg-fart-blue hover:brightness-110 text-white text-[10px] font-black uppercase tracking-wider px-2 py-[3px] rounded-full transition cursor-pointer">Ver</button>
+      </div>
     </div>
 
     <!-- 2. Main Content Area (Controls the layout flow) -->
@@ -53,12 +61,19 @@
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[5px]">Largura px</span>
           </div>
 
+          <!-- Formato de saída (output) -->
           <div class="flex flex-col items-center w-[80px]">
-            <div id="overwriteToggle" class="h-[52px] w-[80px] overflow-visible cursor-pointer select-none"
-              data-state="off"></div>
-            <span
-              class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px] text-center leading-[11px]">MÁX
-              COMP<br>TRUE TONE</span>
+            <div class="h-[52px] flex items-center justify-center">
+              <select id="outputFormat"
+                class="w-[74px] h-[32px] bg-white border-2 border-transparent rounded-[12px] text-center text-[13px] font-bold text-fart-blue shadow-[0_2px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:border-fart-blue transition-all cursor-pointer appearance-none px-0"
+                style="text-align: center; text-align-last: center;">
+                <option value="avif" style="text-align:center;">AVIF</option>
+                <option value="webp" style="text-align:center;">WEBP</option>
+                <option value="jpeg" style="text-align:center;">JPEG</option>
+                <option value="png"  style="text-align:center;">PNG</option>
+              </select>
+            </div>
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[5px]">Formato</span>
           </div>
         </div>
 
@@ -185,7 +200,7 @@
   </div>
 
   <!-- Hidden Input -->
-  <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+  <input type="file" id="fileInput" multiple accept="image/*,application/pdf,.psd,image/vnd.adobe.photoshop" class="hidden">
 
   <script type="module" src="/src/main.js"></script>
 </body>

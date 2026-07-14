@@ -3,11 +3,17 @@ import { setupDragDrop } from './ui/drag-drop.js';
 import { setupCompression } from './ui/compression.js';
 import { addFiles, clearFiles } from './ui/file-list.js';
 import { initToggle } from './ui/toggle-component.js';
+import { setupRemoteHeader } from './ui/remote-header.js';
+import { setupUpdateCheck } from './ui/update-check.js';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
   setupDragDrop();
   setupCompression();
+
+  // Capa mensal remota + verificação de nova versão (não bloqueiam o arranque)
+  setupRemoteHeader();
+  setupUpdateCheck();
 
   // Clear list button
   const clearBtn = document.getElementById('clearListBtn');
@@ -42,10 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // SVG Toggle buttons — uses inline SVG states
   initToggle('autoCompressToggle', false, (isOn) => {
     console.log('Comprimir Auto:', isOn);
-  });
-
-  initToggle('overwriteToggle', false, (isOn) => {
-    console.log('Guardar em Origem:', isOn);
   });
 });
 

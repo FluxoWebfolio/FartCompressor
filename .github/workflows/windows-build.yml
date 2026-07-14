@@ -31,6 +31,15 @@ jobs:
           Remove-Item -Recurse -Force "ffmpeg-win.zip", "ffmpeg-extracted"
         shell: pwsh
 
+      - name: Download Ghostscript for Windows
+        run: |
+          choco install ghostscript --no-progress -y
+          $gsExe = Get-ChildItem "C:\Program Files\gs\*\bin\gswin64c.exe" | Select-Object -First 1
+          Copy-Item $gsExe.FullName "src-tauri\binaries\gs-x86_64-pc-windows-msvc.exe"
+          $gsDll = Get-ChildItem "C:\Program Files\gs\*\bin\gsdll64.dll" | Select-Object -First 1
+          Copy-Item $gsDll.FullName "src-tauri\binaries\gsdll64.dll"
+        shell: pwsh
+
       - name: Install Frontend Dependencies
         run: npm install
 

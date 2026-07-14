@@ -1,0 +1,8 @@
+{
+  "bundle": {
+    "resources": {
+      "binaries/gs_resources": "gs_resources",
+      "binaries/libs_x86": "MacOS/libs_x86"
+    }
+  }
+}

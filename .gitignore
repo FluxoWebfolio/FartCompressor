@@ -23,4 +23,15 @@ dist-ssr
 *.sln
 *.sw?
 src-tauri/binaries/ffmpeg-x86_64-apple-darwin
+# FFmpeg de Windows: 190 MB, acima do limite do GitHub — o CI descarrega-o
+src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
+
+# Instaladores/exports gerados (não vão para o git)
+EXP/
+
+# Ghostscript sidecar (binário + recursos — locais/CI, não vão para o git)
+src-tauri/binaries/gs-*
+src-tauri/binaries/gs_resources
+src-tauri/binaries/libs_x86
+src-tauri/binaries/gsdll64.dll
 

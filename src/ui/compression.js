@@ -2,7 +2,10 @@ import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import * as avif from '@jsquash/avif';
 import * as jpeg from '@jsquash/jpeg';
+import * as webp from '@jsquash/webp';
+import * as png from '@jsquash/png';
 import resize from '@jsquash/resize';
+import { readPsd } from 'ag-psd';
 import { initSlider } from './slider-component.js';
 
 let currentQuality = 75;
@@ -89,31 +92,53 @@ export async function startCompression() {
         if (progressBar) progressBar.style.width = `${Math.round((i / total) * 100)}%`;
 
         try {
-            // Read True Tone state from the Right Toggle ("MÁX COMP | TRUE TONE")
-            const trueToneToggle = document.getElementById('overwriteToggle');
-            const isTrueTone = trueToneToggle ? trueToneToggle.getAttribute('data-state') === 'on' : false;
+            // Read selected output format from the dropdown (avif | webp | jpeg | png)
+            const formatSelect = document.getElementById('outputFormat');
+            const outputFormat = formatSelect ? formatSelect.value : 'avif';
 
             // Check if it's a video file based on common extensions
             const isVideo = /\.(mp4|mov|avi|mkv|webm|flv)$/i.test(file.path);
+            const isPdf = /\.pdf$/i.test(file.path);
+            const isPsd = /\.psd$/i.test(file.path);
 
             let result;
 
             if (isVideo) {
                 // Video compression via backend FFmpeg Sidecar
                 result = await invoke('compress_video_ffmpeg', { path: file.path });
+            } else if (isPdf) {
+                // PDF compression via Ghostscript Sidecar — qualidade segue o slider
+                result = await invoke('compress_pdf_ghostscript', { path: file.path, quality });
             } else {
-                // Decode original image into raw pixel data via browser Canvas
-                // Fetch binary bytes directly from Tauri backend to prevent CORS / Unsupported URL issues
+                // Decode original image (ou PSD aplanado) para pixels RGBA.
                 const rawBytes = await invoke('read_file_to_bytes', { path: file.path });
-                const blob = new Blob([new Uint8Array(rawBytes)]);
-                const bitmap = await createImageBitmap(blob);
+                let imgData;
 
-                const canvas = document.createElement('canvas');
-                canvas.width = bitmap.width;
-                canvas.height = bitmap.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(bitmap, 0, 0);
-                let imgData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+                if (isPsd) {
+                    // PSD → composite (imagem final aplanada) via ag-psd.
+                    // Perde as camadas — o resultado é a imagem que verias no Photoshop.
+                    const bytes = new Uint8Array(rawBytes);
+                    // ArrayBuffer isolado (evita partilhar memória com o Node/Tauri wrapper)
+                    const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+                    const psd = readPsd(buffer, { useImageData: true });
+                    if (psd.imageData) {
+                        imgData = psd.imageData;
+                    } else if (psd.canvas) {
+                        const ctx = psd.canvas.getContext('2d');
+                        imgData = ctx.getImageData(0, 0, psd.canvas.width, psd.canvas.height);
+                    } else {
+                        throw new Error('PSD sem composite legível (guardado sem "Maximize compatibility"?)');
+                    }
+                } else {
+                    const blob = new Blob([new Uint8Array(rawBytes)]);
+                    const bitmap = await createImageBitmap(blob);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = bitmap.width;
+                    canvas.height = bitmap.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(bitmap, 0, 0);
+                    imgData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+                }
 
                 // Check for resize input
                 const resizeInput = document.getElementById('resizeWidth');
@@ -138,20 +163,35 @@ export async function startCompression() {
                     }
                 }
 
-                // Image compression via client-side WASM
+                // Image compression via client-side WASM — formato escolhido no dropdown
                 let compressedBuffer;
                 let ext;
 
-                if (isTrueTone) {
-                    // mozjpeg expects quality 1-100
-                    compressedBuffer = await jpeg.encode(imgData, { quality });
-                    ext = "jpg";
-                } else {
-                    // avif CQ level mapping: higher slider quality = lower CQ (better quality)
-                    // CQ range: 0 (lossless) to 63 (lowest). Default is 33.
-                    const cqLevel = Math.round(63 - (quality / 100) * 63);
-                    compressedBuffer = await avif.encode(imgData, { cqLevel, speed: 6 });
-                    ext = "avif";
+                switch (outputFormat) {
+                    case 'jpeg':
+                        // mozjpeg expects quality 1-100
+                        compressedBuffer = await jpeg.encode(imgData, { quality });
+                        ext = "jpg";
+                        break;
+                    case 'webp':
+                        // webp quality 0-100 (maior = melhor)
+                        compressedBuffer = await webp.encode(imgData, { quality });
+                        ext = "webp";
+                        break;
+                    case 'png':
+                        // PNG é sem perdas — o slider de qualidade não se aplica
+                        compressedBuffer = await png.encode(imgData);
+                        ext = "png";
+                        break;
+                    case 'avif':
+                    default: {
+                        // avif CQ level: maior qualidade no slider = CQ mais baixo (melhor)
+                        // Intervalo CQ: 0 (lossless) a 63 (pior). Default 33.
+                        const cqLevel = Math.round(63 - (quality / 100) * 63);
+                        compressedBuffer = await avif.encode(imgData, { cqLevel, speed: 6 });
+                        ext = "avif";
+                        break;
+                    }
                 }
 
                 // Send raw binary to Tauri backend just to save to disk

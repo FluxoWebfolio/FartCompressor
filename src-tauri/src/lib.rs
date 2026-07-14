@@ -1,6 +1,23 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use serde::Serialize;
+
+// Devolve um caminho de saída que não colide com ficheiros existentes.
+// Primeiro tenta `{stem}_compressed.{ext}`; se existir, tenta `_v2`, `_v3`, etc.
+fn unique_output_path(parent: &Path, stem: &str, ext: &str) -> PathBuf {
+    let first = parent.join(format!("{}_compressed.{}", stem, ext));
+    if !first.exists() {
+        return first;
+    }
+    let mut n = 2u32;
+    loop {
+        let candidate = parent.join(format!("{}_compressed_v{}.{}", stem, n, ext));
+        if !candidate.exists() {
+            return candidate;
+        }
+        n += 1;
+    }
+}
 
 #[derive(Debug, Serialize)]
 struct FileInfo {
@@ -70,7 +87,7 @@ async fn save_compressed_file(
 
     let file_stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
     let parent = file_path.parent().unwrap_or_else(|| Path::new("."));
-    let output_path = parent.join(format!("{}_compressed.{}", file_stem, extension));
+    let output_path = unique_output_path(parent, &file_stem, &extension);
 
     match std::fs::write(&output_path, &bytes) {
         Ok(_) => Ok(CompressResult {
@@ -99,8 +116,7 @@ async fn compress_video_ffmpeg(app: tauri::AppHandle, path: String) -> Result<Co
 
     let file_stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
     let parent = file_path.parent().unwrap_or_else(|| Path::new("."));
-    // Output MKV file alongside original
-    let output_path = parent.join(format!("{}_compressed.mkv", file_stem));
+    let output_path = unique_output_path(parent, &file_stem, "mkv");
     let output_path_str = output_path.to_string_lossy().to_string();
 
     // Spawn the bundled FFmpeg sidecar
@@ -142,12 +158,118 @@ async fn compress_video_ffmpeg(app: tauri::AppHandle, path: String) -> Result<Co
     })
 }
 
+#[tauri::command]
+async fn compress_pdf_ghostscript(app: tauri::AppHandle, path: String, quality: u32) -> Result<CompressResult, String> {
+    use tauri_plugin_shell::ShellExt;
+    use tauri::Manager;
+
+    let file_path = Path::new(&path);
+    if !file_path.exists() {
+        return Err(format!("PDF file not found: {}", path));
+    }
+
+    let original_size = std::fs::metadata(file_path)
+        .map(|m| m.len())
+        .unwrap_or(0);
+
+    let file_stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
+    let parent = file_path.parent().unwrap_or_else(|| Path::new("."));
+    let output_path = unique_output_path(parent, &file_stem, "pdf");
+    let output_path_str = output_path.to_string_lossy().to_string();
+
+    // Slider de qualidade (0-100) -> preset Ghostscript + resolução das imagens.
+    // Texto e vetores ficam sempre intactos; só as imagens são reamostradas.
+    let (preset, color_dpi) = match quality {
+        0..=35 => ("/screen", 100u32),
+        36..=70 => ("/ebook", 150),
+        71..=90 => ("/printer", 225),
+        _ => ("/prepress", 300),
+    };
+    let mono_dpi = (color_dpi * 2).min(600);
+
+    let pdf_settings = format!("-dPDFSETTINGS={}", preset);
+    let color_res = format!("-dColorImageResolution={}", color_dpi);
+    let gray_res = format!("-dGrayImageResolution={}", color_dpi);
+    let mono_res = format!("-dMonoImageResolution={}", mono_dpi);
+    let out_arg = format!("-sOutputFile={}", output_path_str);
+
+    let mut sidecar_cmd = app
+        .shell()
+        .sidecar("gs")
+        .map_err(|e| format!("Failed to create Ghostscript sidecar command: {}", e))?
+        .args(vec![
+            "-sDEVICE=pdfwrite",
+            "-dCompatibilityLevel=1.5",
+            &pdf_settings,
+            "-dNOPAUSE",
+            "-dBATCH",
+            "-dQUIET",
+            "-dSAFER",
+            "-dAutoRotatePages=/None",
+            "-dDetectDuplicateImages=true",
+            "-dCompressFonts=true",
+            "-dSubsetFonts=true",
+            "-dDownsampleColorImages=true",
+            &color_res,
+            "-dColorImageDownsampleType=/Bicubic",
+            "-dDownsampleGrayImages=true",
+            &gray_res,
+            "-dGrayImageDownsampleType=/Bicubic",
+            "-dDownsampleMonoImages=true",
+            &mono_res,
+            &out_arg,
+            &path,
+        ]);
+
+    // O binário gs (macOS) não tem os ficheiros de init embutidos — aponta GS_LIB
+    // para os recursos bundled (gs_resources), tal como a app antiga fazia.
+    if let Ok(res_dir) = app.path().resource_dir() {
+        let gs_base = res_dir.join("gs_resources");
+        if gs_base.exists() {
+            let b = gs_base.to_string_lossy();
+            let sep = if cfg!(windows) { ";" } else { ":" };
+            let gs_lib = [
+                format!("{}/Resource/Init", b),
+                format!("{}/lib", b),
+                format!("{}/Resource", b),
+                format!("{}/iccprofiles", b),
+                format!("{}/fonts", b),
+            ]
+            .join(sep);
+            sidecar_cmd = sidecar_cmd.env("GS_LIB", gs_lib);
+        }
+    }
+
+    let output = sidecar_cmd
+        .output()
+        .await
+        .map_err(|e| format!("Failed to execute Ghostscript: {}", e))?;
+
+    if !output.status.success() {
+        let err_msg = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("Ghostscript error (code {}): {}", output.status.code().unwrap_or(-1), err_msg));
+    }
+
+    let compressed_size = std::fs::metadata(&output_path)
+        .map(|m| m.len())
+        .unwrap_or(0);
+
+    Ok(CompressResult {
+        path: path.clone(),
+        original_size,
+        compressed_size,
+        success: true,
+        error: None,
+    })
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![get_file_info, save_compressed_file, read_file_to_bytes, compress_video_ffmpeg])
+        .plugin(tauri_plugin_http::init())
+        .invoke_handler(tauri::generate_handler![get_file_info, save_compressed_file, read_file_to_bytes, compress_video_ffmpeg, compress_pdf_ghostscript])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
