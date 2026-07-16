@@ -2,6 +2,21 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use serde::Serialize;
 
+// Escolhe a pasta de destino: a que o utilizador definiu no botão "Guardar",
+// ou (por defeito) a pasta onde está o ficheiro original.
+fn resolve_output_dir(file_path: &Path, output_dir: &Option<String>) -> PathBuf {
+    if let Some(dir) = output_dir {
+        let p = PathBuf::from(dir);
+        if p.is_dir() {
+            return p;
+        }
+    }
+    file_path
+        .parent()
+        .unwrap_or_else(|| Path::new("."))
+        .to_path_buf()
+}
+
 // Devolve um caminho de saída que não colide com ficheiros existentes.
 // Primeiro tenta `{stem}_compressed.{ext}`; se existir, tenta `_v2`, `_v3`, etc.
 fn unique_output_path(parent: &Path, stem: &str, ext: &str) -> PathBuf {
@@ -30,6 +45,8 @@ struct FileInfo {
 #[derive(Debug, Serialize)]
 struct CompressResult {
     path: String,
+    /// Caminho do ficheiro criado (usado pelo botão "Ver pasta").
+    output_path: String,
     original_size: u64,
     compressed_size: u64,
     success: bool,
@@ -77,21 +94,23 @@ async fn save_compressed_file(
     path: String,
     bytes: Vec<u8>,
     extension: String,
+    output_dir: Option<String>,
 ) -> Result<CompressResult, String> {
     let file_path = Path::new(&path);
-    
+
     let original_size = match std::fs::metadata(file_path) {
         Ok(m) => m.len(),
         Err(_) => 0,
     };
 
     let file_stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
-    let parent = file_path.parent().unwrap_or_else(|| Path::new("."));
-    let output_path = unique_output_path(parent, &file_stem, &extension);
+    let parent = resolve_output_dir(file_path, &output_dir);
+    let output_path = unique_output_path(&parent, &file_stem, &extension);
 
     match std::fs::write(&output_path, &bytes) {
         Ok(_) => Ok(CompressResult {
             path,
+            output_path: output_path.to_string_lossy().to_string(),
             original_size,
             compressed_size: bytes.len() as u64,
             success: true,
@@ -102,9 +121,9 @@ async fn save_compressed_file(
 }
 
 #[tauri::command]
-async fn compress_video_ffmpeg(app: tauri::AppHandle, path: String) -> Result<CompressResult, String> {
+async fn compress_video_ffmpeg(app: tauri::AppHandle, path: String, output_dir: Option<String>) -> Result<CompressResult, String> {
     use tauri_plugin_shell::ShellExt;
-    
+
     let file_path = Path::new(&path);
     if !file_path.exists() {
         return Err(format!("Video file not found: {}", path));
@@ -115,8 +134,8 @@ async fn compress_video_ffmpeg(app: tauri::AppHandle, path: String) -> Result<Co
         .unwrap_or(0);
 
     let file_stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
-    let parent = file_path.parent().unwrap_or_else(|| Path::new("."));
-    let output_path = unique_output_path(parent, &file_stem, "mkv");
+    let parent = resolve_output_dir(file_path, &output_dir);
+    let output_path = unique_output_path(&parent, &file_stem, "mkv");
     let output_path_str = output_path.to_string_lossy().to_string();
 
     // Spawn the bundled FFmpeg sidecar
@@ -151,6 +170,7 @@ async fn compress_video_ffmpeg(app: tauri::AppHandle, path: String) -> Result<Co
 
     Ok(CompressResult {
         path: path.clone(),
+        output_path: output_path_str,
         original_size,
         compressed_size,
         success: true,
@@ -159,7 +179,7 @@ async fn compress_video_ffmpeg(app: tauri::AppHandle, path: String) -> Result<Co
 }
 
 #[tauri::command]
-async fn compress_pdf_ghostscript(app: tauri::AppHandle, path: String, quality: u32) -> Result<CompressResult, String> {
+async fn compress_pdf_ghostscript(app: tauri::AppHandle, path: String, quality: u32, output_dir: Option<String>) -> Result<CompressResult, String> {
     use tauri_plugin_shell::ShellExt;
     use tauri::Manager;
 
@@ -173,8 +193,8 @@ async fn compress_pdf_ghostscript(app: tauri::AppHandle, path: String, quality: 
         .unwrap_or(0);
 
     let file_stem = file_path.file_stem().unwrap_or_default().to_string_lossy();
-    let parent = file_path.parent().unwrap_or_else(|| Path::new("."));
-    let output_path = unique_output_path(parent, &file_stem, "pdf");
+    let parent = resolve_output_dir(file_path, &output_dir);
+    let output_path = unique_output_path(&parent, &file_stem, "pdf");
     let output_path_str = output_path.to_string_lossy().to_string();
 
     // Slider de qualidade (0-100) -> preset Ghostscript + resolução das imagens.
@@ -256,6 +276,7 @@ async fn compress_pdf_ghostscript(app: tauri::AppHandle, path: String, quality: 
 
     Ok(CompressResult {
         path: path.clone(),
+        output_path: output_path_str,
         original_size,
         compressed_size,
         success: true,
@@ -269,6 +290,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![get_file_info, save_compressed_file, read_file_to_bytes, compress_video_ffmpeg, compress_pdf_ghostscript])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

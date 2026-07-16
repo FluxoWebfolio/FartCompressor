@@ -11,7 +11,7 @@ export default defineConfig({
         topLevelAwait()
     ],
     optimizeDeps: {
-        exclude: ['@jsquash/avif', '@jsquash/jpeg', '@jsquash/resize', '@jsquash/webp', '@jsquash/png']
+        exclude: ['@jsquash/avif', '@jsquash/jpeg', '@jsquash/resize', '@jsquash/webp', '@jsquash/png', '@jsquash/oxipng']
     },
     worker: {
         format: "es",

@@ -144,11 +144,25 @@
       <!-- Bottom Section: Compress Button & Progress Bar (Fixed at very bottom) -->
       <div class="relative z-50 shrink-0 flex flex-col items-center -mx-8 px-8 bg-[#f0f5f5]">
         <!-- Extra spacing for the button, moved visually up over the shadow -->
-        <div class="w-full flex justify-center mt-[-25px] pb-[10px]">
+        <!-- Abaixo de 588px o COMPRIMIR passa a ocupar a linha toda e os botões
+             laterais descem para baixo dele, centrados. -->
+        <div class="w-full flex flex-wrap justify-center items-center gap-x-2 gap-y-[7px] mt-[-25px] pb-[10px]">
+
+          <!-- GUARDAR: escolhe a pasta de destino (por defeito: a do ficheiro original) -->
+          <button id="saveDirBtn" type="button" title="Escolher a pasta onde guardar os ficheiros comprimidos"
+            class="h-[44px] shrink-0 px-4 rounded-full bg-white text-black text-[12px] font-black uppercase tracking-wide flex items-center gap-2 cursor-pointer transition-all hover:brightness-105 active:scale-95 max-[588px]:order-2 max-[588px]:mt-[-14px]"
+            style="filter: drop-shadow(0 6px 8px rgb(0 0 0 / 0.22));">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 7.5A1.5 1.5 0 014.5 6h4l2 2.5h9A1.5 1.5 0 0121 10v7.5a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.5v-10z" />
+            </svg>
+            <span>Guardar</span>
+          </button>
+
           <button id="compressBtn"
-            class="group relative cursor-pointer border-none bg-transparent p-0 transition-transform active:scale-95 focus:outline-none">
+            class="group relative shrink-0 cursor-pointer border-none bg-transparent p-0 transition-transform active:scale-95 focus:outline-none max-[588px]:order-1 max-[588px]:w-full max-[588px]:flex max-[588px]:justify-center">
             <!-- Inlined SVG for button appearance -->
-            <svg class="h-[119px] w-auto transition-all group-hover:brightness-110"
+            <svg class="h-[96px] w-auto transition-all group-hover:brightness-110"
               style="filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.3));" xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 192 66.4">
               <defs>
@@ -167,9 +181,9 @@
 
             <!-- Default Content: Text & Icon -->
             <div id="compressContent"
-              class="absolute inset-0 flex items-center justify-center gap-2 text-white font-black text-lg uppercase tracking-widest shadow-black drop-shadow-md">
+              class="absolute inset-0 flex items-center justify-center gap-2 text-white font-black text-base uppercase tracking-widest shadow-black drop-shadow-md">
               <span>COMPRIMIR</span>
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z">
                 </path>
               </svg>
@@ -177,9 +191,20 @@
 
             <!-- Overlay for Loading/Squeezing State -->
             <div id="compressOverlay"
-              class="absolute inset-0 flex items-center justify-center gap-2 text-white font-black text-lg uppercase tracking-widest opacity-0 transition-opacity pointer-events-none">
+              class="absolute inset-0 flex items-center justify-center gap-2 text-white font-black text-base uppercase tracking-widest opacity-0 transition-opacity pointer-events-none">
               <!-- Content injected by JS -->
             </div>
+          </button>
+
+          <!-- IR PARA: revela no Finder/Explorador o ficheiro comprimido -->
+          <button id="revealBtn" type="button" title="Abrir a pasta do ficheiro comprimido"
+            class="h-[44px] shrink-0 px-4 rounded-full bg-white text-black text-[12px] font-black uppercase tracking-wide flex items-center gap-2 cursor-pointer transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed max-[588px]:order-3 max-[588px]:mt-[-14px]"
+            style="filter: drop-shadow(0 6px 8px rgb(0 0 0 / 0.22));" disabled>
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <circle cx="10.5" cy="10.5" r="6.5" />
+              <path stroke-linecap="round" d="M15.4 15.4L21 21" />
+            </svg>
+            <span>Ir para</span>
           </button>
         </div>
 

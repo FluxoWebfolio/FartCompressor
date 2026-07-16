@@ -82,19 +82,23 @@ export function updateFileRow(path, result) {
     if (result.success) {
         const savings = ((result.original_size - result.compressed_size) / result.original_size) * 100;
         const percent = Math.round(savings);
+        // Ficheiro pode CRESCER (ex.: foto JPEG guardada em PNG sem perdas).
+        const grew = result.compressed_size > result.original_size;
+        const colour = grew ? 'text-red-500' : 'text-green-600';
 
-        console.log('   Updating values:', { percent, compressed_size: result.compressed_size });
+        console.log('   Updating values:', { percent, compressed_size: result.compressed_size, grew });
 
         // Update compressed size
         if (compressedSizeEl) {
-            compressedSizeEl.innerHTML = `<span class="text-green-600 font-bold">${formatBytes(result.compressed_size)}</span>`;
+            compressedSizeEl.innerHTML = `<span class="${colour} font-bold">${formatBytes(result.compressed_size)}</span>`;
         } else {
             console.error('   ❌ compressedSizeEl not found!');
         }
 
-        // Update savings percentage
+        // Update savings percentage — "+X%" a vermelho quando o ficheiro aumenta
         if (savingsEl) {
-            savingsEl.innerHTML = `<span class="text-green-600 font-bold">-${percent}%</span>`;
+            const label = grew ? `+${Math.abs(percent)}%` : `-${percent}%`;
+            savingsEl.innerHTML = `<span class="${colour} font-bold">${label}</span>`;
         } else {
             console.error('   ❌ savingsEl not found!');
         }

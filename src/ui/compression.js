@@ -1,19 +1,67 @@
 import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import { revealItemInDir } from '@tauri-apps/plugin-opener';
+import { open as openDialog } from '@tauri-apps/plugin-dialog';
 import * as avif from '@jsquash/avif';
 import * as jpeg from '@jsquash/jpeg';
 import * as webp from '@jsquash/webp';
 import * as png from '@jsquash/png';
+import { optimise as oxipngOptimise } from '@jsquash/oxipng';
+import UPNG from 'upng-js';
 import resize from '@jsquash/resize';
 import { readPsd } from 'ag-psd';
 import { initSlider } from './slider-component.js';
 
 let currentQuality = 75;
+// Último ficheiro criado com sucesso — alvo do botão "Ir para".
+let lastOutputPath = null;
+// Pasta de destino escolhida no botão "Guardar".
+// null = comportamento por defeito (grava ao lado do ficheiro original).
+let outputDir = null;
 
 export function setupCompression() {
     const compressBtn = document.getElementById('compressBtn');
     if (compressBtn) {
         compressBtn.addEventListener('click', startCompression);
+    }
+
+    // "Ir para" — revela o ficheiro comprimido no Finder / Explorador
+    const revealBtn = document.getElementById('revealBtn');
+    if (revealBtn) {
+        revealBtn.addEventListener('click', async () => {
+            if (!lastOutputPath) return;
+            try {
+                await revealItemInDir(lastOutputPath);
+            } catch (e) {
+                console.error('Não foi possível abrir a pasta:', e);
+            }
+        });
+    }
+
+    // "Guardar" — escolhe a pasta de destino dos ficheiros comprimidos
+    const saveDirBtn = document.getElementById('saveDirBtn');
+    if (saveDirBtn) {
+        saveDirBtn.addEventListener('click', async () => {
+            try {
+                const chosen = await openDialog({
+                    directory: true,
+                    multiple: false,
+                    title: 'Escolher pasta de destino',
+                });
+                if (!chosen) return; // cancelou — mantém o que estava
+
+                outputDir = chosen;
+                saveDirBtn.title = `A guardar em: ${chosen}`;
+
+                const statusMsg = document.getElementById('statusMessage');
+                if (statusMsg) {
+                    statusMsg.textContent = `A guardar em: ${chosen}`;
+                    setTimeout(() => { statusMsg.textContent = ''; }, 4000);
+                }
+            } catch (e) {
+                console.error('Não foi possível escolher a pasta:', e);
+            }
+        });
     }
 
     // SVG Slider Initialization
@@ -105,10 +153,10 @@ export async function startCompression() {
 
             if (isVideo) {
                 // Video compression via backend FFmpeg Sidecar
-                result = await invoke('compress_video_ffmpeg', { path: file.path });
+                result = await invoke('compress_video_ffmpeg', { path: file.path, outputDir });
             } else if (isPdf) {
                 // PDF compression via Ghostscript Sidecar — qualidade segue o slider
-                result = await invoke('compress_pdf_ghostscript', { path: file.path, quality });
+                result = await invoke('compress_pdf_ghostscript', { path: file.path, quality, outputDir });
             } else {
                 // Decode original image (ou PSD aplanado) para pixels RGBA.
                 const rawBytes = await invoke('read_file_to_bytes', { path: file.path });
@@ -178,11 +226,41 @@ export async function startCompression() {
                         compressedBuffer = await webp.encode(imgData, { quality });
                         ext = "webp";
                         break;
-                    case 'png':
-                        // PNG é sem perdas — o slider de qualidade não se aplica
-                        compressedBuffer = await png.encode(imgData);
+                    case 'png': {
+                        // PNG é sem perdas: guardar uma foto em PNG "cru" faz o ficheiro
+                        // CRESCER face ao JPEG original. Para haver ganho real fazemos o
+                        // mesmo que o TinyPNG: quantização (reduzir a paleta) + oxipng.
+                        //
+                        // Slider 95-100 -> sem perdas (paleta completa, cores exatas).
+                        // Abaixo disso  -> paleta de 16 a 256 cores (imperceptível na maioria).
+                        const colors = quality >= 95
+                            ? 0
+                            : Math.min(256, Math.max(16, Math.round(quality * 2.56)));
+
+                        let pngBuffer;
+                        try {
+                            const rgba = new Uint8Array(imgData.data).buffer;
+                            pngBuffer = UPNG.encode([rgba], imgData.width, imgData.height, colors);
+                        } catch (err) {
+                            console.warn('[png] Quantização falhou, a usar encode sem perdas:', err);
+                            pngBuffer = await png.encode(imgData);
+                        }
+
+                        // Passagem final sem perdas — encolhe mais uns % sem tocar nos pixels.
+                        try {
+                            pngBuffer = await oxipngOptimise(pngBuffer, {
+                                level: 3,
+                                interlace: false,
+                                optimiseAlpha: true,
+                            });
+                        } catch (err) {
+                            console.warn('[png] oxipng falhou, a guardar sem otimização extra:', err);
+                        }
+
+                        compressedBuffer = pngBuffer;
                         ext = "png";
                         break;
+                    }
                     case 'avif':
                     default: {
                         // avif CQ level: maior qualidade no slider = CQ mais baixo (melhor)
@@ -200,14 +278,23 @@ export async function startCompression() {
                 result = await invoke('save_compressed_file', {
                     path: file.path,
                     bytes: bytesArray,
-                    extension: ext
+                    extension: ext,
+                    outputDir
                 });
             }
 
             // Stop timer and show final state
             if (progressTimer) clearInterval(progressTimer);
             updateFileRow(result.path, result);
-            if (result.success) successCount++;
+            if (result.success) {
+                successCount++;
+                // Guarda o alvo do "Ver pasta" e ativa o botão
+                if (result.output_path) {
+                    lastOutputPath = result.output_path;
+                    const revealBtn = document.getElementById('revealBtn');
+                    if (revealBtn) revealBtn.disabled = false;
+                }
+            }
         } catch (e) {
             if (progressTimer) clearInterval(progressTimer);
             updateFileRow(file.path, { success: false, error: String(e) });
