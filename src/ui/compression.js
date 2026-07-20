@@ -263,10 +263,9 @@ export async function startCompression() {
                     }
                     case 'avif':
                     default: {
-                        // avif CQ level: maior qualidade no slider = CQ mais baixo (melhor)
-                        // Intervalo CQ: 0 (lossless) a 63 (pior). Default 33.
-                        const cqLevel = Math.round(63 - (quality / 100) * 63);
-                        compressedBuffer = await avif.encode(imgData, { cqLevel, speed: 6 });
+                        // @jsquash/avif v2 usa a API nova do libavif: quality 0-100
+                        // (maior = melhor). `cqLevel` já não existe e era ignorado.
+                        compressedBuffer = await avif.encode(imgData, { quality, speed: 6 });
                         ext = "avif";
                         break;
                     }
