@@ -9,6 +9,7 @@
     "core:default",
     "core:event:default",
     "core:window:default",
+    "core:window:allow-start-dragging",
     "opener:default",
     "shell:default",
     "dialog:default",
@@ -25,7 +26,8 @@
         { "url": "http://localhost:*/*" },
         { "url": "http://127.0.0.1:*/*" },
         { "url": "https://ricardosequeira.eu/*" },
-        { "url": "https://*.ricardosequeira.eu/*" }
+        { "url": "https://*.ricardosequeira.eu/*" },
+        { "url": "https://pub-e9766256f2b3492784acc970a0529eaa.r2.dev/*" }
       ]
     },
     {
