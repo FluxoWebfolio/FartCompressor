@@ -22,14 +22,11 @@
   <!-- Main Container -->
   <div class="w-full h-full flex flex-col relative">
 
-    <!-- 0. Barra de título (macOS: os semáforos ficam nesta faixa; zona de arrasto).
-         No Windows a barra nativa mantém-se e esta faixa serve só de topo da app. -->
+    <!-- 0. Barra de título — VAZIA e toda arrastável (macOS: os semáforos ficam
+         nesta faixa; é aqui que se arrasta a janela). No Windows a barra nativa
+         mantém-se e esta faixa serve só de topo da app. -->
     <div id="titlebar" data-tauri-drag-region
-      class="relative w-full h-[34px] shrink-0 bg-[#f0f5f5] flex items-center justify-end px-3 z-30">
-      <!-- Seletor de idioma: EN / PT dentro de um círculo branco -->
-      <button id="langToggle" type="button" title="Mudar para Português"
-        class="w-7 h-7 flex items-center justify-center text-[11px] font-black leading-none rounded-full bg-white text-black border border-black/10 shadow-[0_1px_4px_rgba(0,0,0,0.18)] hover:brightness-95 active:scale-95 transition cursor-pointer select-none">EN</button>
-    </div>
+      class="w-full h-[34px] shrink-0 bg-[#f0f5f5] z-30"></div>
 
     <!-- 1. Header Image (clicável: mostra as capas/skins anteriores) -->
     <div class="relative w-full h-[35%] max-h-[240px] bg-gray-200 overflow-hidden shrink-0">
@@ -38,6 +35,10 @@
         <img id="headerImage" src="/src/assets/header_bg.png" alt="Header" class="w-full h-full object-cover">
       </button>
       <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#f0f5f5] to-transparent hidden"></div>
+
+      <!-- Seletor de idioma: EN / PT (círculo branco) sobre a imagem, canto sup. direito -->
+      <button id="langToggle" type="button" title="Mudar para Português"
+        class="absolute top-2 right-3 z-40 w-8 h-8 flex items-center justify-center text-[11px] font-black leading-none rounded-full bg-white text-black shadow-[0_2px_6px_rgba(0,0,0,0.35)] hover:brightness-95 active:scale-95 transition cursor-pointer select-none">EN</button>
 
       <!-- Update available banner (hidden by default; shown by update-check.js) -->
       <div id="updateBanner"
