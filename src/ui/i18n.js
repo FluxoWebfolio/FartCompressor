@@ -63,8 +63,13 @@ const DICT = {
   squeezing:         { en: 'SQUEEZING...',               pt: 'A ESPREMER...' },
   done:              { en: (ok, n) => `Done! ${ok}/${n} files compressed.`, pt: (ok, n) => `Concluído! ${ok}/${n} ficheiros comprimidos.` },
   error_short:       { en: 'Error',                      pt: 'Erro' },
-  // Tooltip da bandeira
+  // Tooltip do seletor de idioma
   lang_toggle_title: { en: 'Mudar para Português',       pt: 'Switch to English' },
+  // Modal das skins / capas anteriores
+  skins_question:    { en: 'View previous skins?',       pt: 'Ver as skins anteriores?' },
+  skins_view:        { en: 'View',                       pt: 'Ver' },
+  skins_cancel:      { en: 'Cancel',                     pt: 'Cancelar' },
+  header_skins_title:{ en: 'View previous skins',        pt: 'Ver as skins anteriores' },
 };
 
 let currentLang = DEFAULT_LANG;
@@ -114,9 +119,8 @@ export function setupLanguage() {
   const btn = document.getElementById('langToggle');
   if (btn) {
     const render = () => {
-      // Mostra a bandeira do idioma para o qual se vai MUDAR (afordância clássica).
-      const next = currentLang === 'en' ? 'pt' : 'en';
-      btn.textContent = next === 'pt' ? '🇵🇹' : '🇬🇧';
+      // Mostra o idioma ATIVO em texto (EN / PT) dentro do círculo branco.
+      btn.textContent = currentLang.toUpperCase();
       btn.title = t('lang_toggle_title');
     };
     btn.addEventListener('click', () => {

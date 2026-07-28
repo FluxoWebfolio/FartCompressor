@@ -22,14 +22,22 @@
   <!-- Main Container -->
   <div class="w-full h-full flex flex-col relative">
 
-    <!-- 1. Header Image (Fixed height ratio) -->
-    <div class="relative w-full h-[35%] max-h-[240px] bg-gray-200 overflow-hidden shrink-0" data-tauri-drag-region>
-      <img id="headerImage" src="/src/assets/header_bg.png" alt="Header" class="w-full h-full object-cover pointer-events-none">
-      <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#f0f5f5] to-transparent hidden"></div>
+    <!-- 0. Barra de título (macOS: os semáforos ficam nesta faixa; zona de arrasto).
+         No Windows a barra nativa mantém-se e esta faixa serve só de topo da app. -->
+    <div id="titlebar" data-tauri-drag-region
+      class="relative w-full h-[34px] shrink-0 bg-[#f0f5f5] flex items-center justify-end px-3 z-30">
+      <!-- Seletor de idioma: EN / PT dentro de um círculo branco -->
+      <button id="langToggle" type="button" title="Mudar para Português"
+        class="w-7 h-7 flex items-center justify-center text-[11px] font-black leading-none rounded-full bg-white text-black border border-black/10 shadow-[0_1px_4px_rgba(0,0,0,0.18)] hover:brightness-95 active:scale-95 transition cursor-pointer select-none">EN</button>
+    </div>
 
-      <!-- Seletor de idioma (canto superior direito; na barra de título no macOS) -->
-      <button id="langToggle" type="button" title="Switch to English"
-        class="absolute top-2 right-3 z-40 w-9 h-9 flex items-center justify-center text-[20px] leading-none rounded-full bg-black/35 hover:bg-black/55 backdrop-blur-sm shadow-lg transition cursor-pointer select-none">🇵🇹</button>
+    <!-- 1. Header Image (clicável: mostra as capas/skins anteriores) -->
+    <div class="relative w-full h-[35%] max-h-[240px] bg-gray-200 overflow-hidden shrink-0">
+      <button id="headerImageBtn" type="button" title="View previous skins" data-i18n-title="header_skins_title"
+        class="absolute inset-0 z-10 w-full h-full p-0 border-none bg-transparent cursor-pointer">
+        <img id="headerImage" src="/src/assets/header_bg.png" alt="Header" class="w-full h-full object-cover">
+      </button>
+      <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#f0f5f5] to-transparent hidden"></div>
 
       <!-- Update available banner (hidden by default; shown by update-check.js) -->
       <div id="updateBanner"
@@ -224,6 +232,22 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Modal: "Ver as skins anteriores?" (aberto ao clicar na imagem do topo) -->
+  <div id="skinsModal"
+    class="hidden absolute inset-0 z-[60] flex items-center justify-center bg-black/45 backdrop-blur-sm opacity-0 transition-opacity duration-200">
+    <div class="bg-white rounded-[24px] shadow-2xl px-7 py-6 mx-6 max-w-[320px] text-center">
+      <p class="text-[17px] font-black text-black leading-snug" data-i18n="skins_question">View previous skins?</p>
+      <div class="flex gap-3 justify-center mt-5">
+        <button id="skinsCancelBtn" type="button"
+          class="px-4 h-[40px] rounded-full bg-gray-100 hover:bg-gray-200 text-black text-[13px] font-black uppercase tracking-wide transition cursor-pointer active:scale-95"
+          data-i18n="skins_cancel">Cancel</button>
+        <button id="skinsViewBtn" type="button"
+          class="px-5 h-[40px] rounded-full bg-fart-blue hover:brightness-110 text-white text-[13px] font-black uppercase tracking-wide transition cursor-pointer active:scale-95"
+          data-i18n="skins_view">View</button>
+      </div>
     </div>
   </div>
 

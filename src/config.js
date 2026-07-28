@@ -11,10 +11,14 @@
 //  Quando o site real estiver pronto, troca apenas a linha BASE_URL abaixo,
 //  recompila e distribui a app.
 //
-export const BASE_URL = 'http://localhost:4599';
+export const BASE_URL = 'https://www.ricardosequeira.eu/fartcompressor';
 
 // Imagem do topo — nome FIXO. Todos os meses substituis o ficheiro capa.png no site.
 export const CAPA_URL = `${BASE_URL}/capa.png`;
 
 // Ficheiro de configuração — versão mais recente + link de download.
 export const CONFIG_URL = `${BASE_URL}/config.json`;
+
+// Galeria das capas/skins anteriores — aberta pelo modal ao clicar na imagem do topo.
+// (Cria esta página no site quando quiseres mostrar o histórico de capas.)
+export const SKINS_URL = `${BASE_URL}/skins/`;

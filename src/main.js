@@ -6,6 +6,7 @@ import { initToggle } from './ui/toggle-component.js';
 import { setupRemoteHeader } from './ui/remote-header.js';
 import { setupUpdateCheck } from './ui/update-check.js';
 import { setupLanguage } from './ui/i18n.js';
+import { setupSkinsModal } from './ui/skins-modal.js';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Capa mensal remota + verificação de nova versão (não bloqueiam o arranque)
   setupRemoteHeader();
   setupUpdateCheck();
+
+  // Modal "Ver as skins anteriores?" ao clicar na imagem do topo
+  setupSkinsModal();
 
   // Clear list button
   const clearBtn = document.getElementById('clearListBtn');
