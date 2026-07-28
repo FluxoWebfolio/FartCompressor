@@ -5,9 +5,13 @@ import { addFiles, clearFiles } from './ui/file-list.js';
 import { initToggle } from './ui/toggle-component.js';
 import { setupRemoteHeader } from './ui/remote-header.js';
 import { setupUpdateCheck } from './ui/update-check.js';
+import { setupLanguage } from './ui/i18n.js';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+  // Idioma (EN por defeito + PT) — aplica traduções antes de tudo o resto.
+  setupLanguage();
+
   setupDragDrop();
   setupCompression();
 

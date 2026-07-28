@@ -15,7 +15,7 @@
   <div id="dropOverlay"
     class="absolute inset-0 bg-fart-blue/20 backdrop-blur-sm z-50 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
     <div class="bg-white p-8 rounded-[28px] shadow-2xl transform scale-110">
-      <p class="text-2xl font-bold text-fart-blue uppercase tracking-wider">Larga aqui os teus peidos!</p>
+      <p class="text-2xl font-bold text-fart-blue uppercase tracking-wider" data-i18n="drop_overlay">Drop your farts here!</p>
     </div>
   </div>
 
@@ -23,16 +23,20 @@
   <div class="w-full h-full flex flex-col relative">
 
     <!-- 1. Header Image (Fixed height ratio) -->
-    <div class="relative w-full h-[35%] max-h-[240px] bg-gray-200 overflow-hidden shrink-0">
-      <img id="headerImage" src="/src/assets/header_bg.png" alt="Header" class="w-full h-full object-cover">
+    <div class="relative w-full h-[35%] max-h-[240px] bg-gray-200 overflow-hidden shrink-0" data-tauri-drag-region>
+      <img id="headerImage" src="/src/assets/header_bg.png" alt="Header" class="w-full h-full object-cover pointer-events-none">
       <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#f0f5f5] to-transparent hidden"></div>
+
+      <!-- Seletor de idioma (canto superior direito; na barra de título no macOS) -->
+      <button id="langToggle" type="button" title="Switch to English"
+        class="absolute top-2 right-3 z-40 w-9 h-9 flex items-center justify-center text-[20px] leading-none rounded-full bg-black/35 hover:bg-black/55 backdrop-blur-sm shadow-lg transition cursor-pointer select-none">🇵🇹</button>
 
       <!-- Update available banner (hidden by default; shown by update-check.js) -->
       <div id="updateBanner"
         class="hidden absolute top-2 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-black/80 backdrop-blur-sm text-white text-[11px] font-bold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
-        <span id="updateBannerText">Nova versão disponível</span>
+        <span id="updateBannerText">New version available</span>
         <button id="updateBannerBtn"
-          class="bg-fart-blue hover:brightness-110 text-white text-[10px] font-black uppercase tracking-wider px-2 py-[3px] rounded-full transition cursor-pointer">Ver</button>
+          class="bg-fart-blue hover:brightness-110 text-white text-[10px] font-black uppercase tracking-wider px-2 py-[3px] rounded-full transition cursor-pointer" data-i18n="update_view">View</button>
       </div>
     </div>
 
@@ -47,18 +51,17 @@
             <div id="autoCompressToggle" class="h-[52px] w-[80px] overflow-visible cursor-pointer select-none"
               data-state="off"></div>
             <span
-              class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px] whitespace-nowrap">Comprimir
-              Auto</span>
+              class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[6px] whitespace-nowrap" data-i18n="auto_compress">Auto Compress</span>
           </div>
 
           <!-- Redimensionar Largura Input -->
           <div class="flex flex-col items-center justify-center w-[80px]">
             <div class="h-[52px] flex items-center justify-center">
-              <input type="number" id="resizeWidth" placeholder="Auto"
+              <input type="number" id="resizeWidth" placeholder="Auto" data-i18n-placeholder="width_placeholder"
                 class="w-[70px] h-[32px] bg-white border-2 border-transparent rounded-[12px] text-center text-[13px] font-bold text-fart-blue shadow-[0_2px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:border-fart-blue transition-all placeholder:text-gray-300 placeholder:font-semibold"
                 min="10">
             </div>
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[5px]">Largura px</span>
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[5px]" data-i18n="width_px">Width px</span>
           </div>
 
           <!-- Formato de saída (output) -->
@@ -73,20 +76,20 @@
                 <option value="png"  style="text-align:center;">PNG</option>
               </select>
             </div>
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[5px]">Formato</span>
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider -mt-[5px]" data-i18n="format">Format</span>
           </div>
         </div>
 
         <!-- Quality Slider -->
         <div class="w-full relative h-[72px]">
           <div class="absolute left-[23px] top-[45px] -translate-y-1/2 flex flex-col pointer-events-none z-10">
-            <span class="text-[11px] font-bold text-black uppercase tracking-wider">Compressão</span>
-            <span class="text-[9px] font-bold text-gray-400 text-right -mt-[1px]">Bufa ultra-leve!</span>
+            <span class="text-[11px] font-bold text-black uppercase tracking-wider" data-i18n="compression">Compression</span>
+            <span class="text-[9px] font-bold text-gray-400 text-right -mt-[1px]" data-i18n="compression_sub">Ultra-light fart!</span>
           </div>
           <div id="qualitySliderContainer" class="w-full h-full relative"></div>
           <div class="absolute right-[23px] top-[45px] -translate-y-1/2 flex flex-col pointer-events-none z-10">
-            <span class="text-[11px] font-bold text-black uppercase tracking-wider">Qualidade</span>
-            <span class="text-[9px] font-bold text-gray-400 text-left -mt-[1px]">Bufa com classe!</span>
+            <span class="text-[11px] font-bold text-black uppercase tracking-wider" data-i18n="quality">Quality</span>
+            <span class="text-[9px] font-bold text-gray-400 text-left -mt-[1px]" data-i18n="quality_sub">Fart with class!</span>
           </div>
         </div>
       </div>
@@ -101,15 +104,15 @@
             <div class="col-span-5 flex items-center gap-2">
               <div id="clearListBtn"
                 class="relative cursor-pointer rounded-md transition-all duration-200 hover:bg-red-500/80 p-[2px]"
-                title="Limpar lista">
-                <img src="/src/assets/IconFolder.svg" alt="Limpar Lista" width="32" height="32" class="select-none">
+                title="Clear list" data-i18n-title="clear_list">
+                <img src="/src/assets/IconFolder.svg" alt="Clear list" width="32" height="32" class="select-none">
               </div>
-              <span>Ficheiro</span>
+              <span data-i18n="col_file">File</span>
             </div>
             <div class="col-span-1 text-right flex items-center justify-end"></div>
-            <div class="col-span-2 text-right flex items-center justify-end">Antes</div>
-            <div class="col-span-2 text-right flex items-center justify-end">Depois</div>
-            <div class="col-span-2 text-right flex items-center justify-end">(%)</div>
+            <div class="col-span-2 text-right flex items-center justify-end" data-i18n="col_before">Before</div>
+            <div class="col-span-2 text-right flex items-center justify-end" data-i18n="col_after">After</div>
+            <div class="col-span-2 text-right flex items-center justify-end" data-i18n="col_percent">(%)</div>
           </div>
 
           <!-- Scrollable Area -->
@@ -120,7 +123,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
               </svg>
-              <p class="text-xs font-medium">Larga os ficheiros aqui</p>
+              <p class="text-xs font-medium" data-i18n="empty_drop">Drop your files here</p>
             </div>
             <div id="filesList" class="">
               <!-- Items will be injected here -->
@@ -130,7 +133,7 @@
 
         <div
           class="shrink-0 bg-black text-white p-3 grid grid-cols-12 gap-2 text-[13px] font-black items-center z-10 tracking-tight rounded-b-[28px]">
-          <div class="col-span-5 pl-2">TOTAL</div>
+          <div class="col-span-5 pl-2" data-i18n="total">TOTAL</div>
           <div class="col-span-1"></div>
           <div class="col-span-2 text-right" id="totalOriginalSize">0 B</div>
           <div class="col-span-2 text-right flex justify-end items-center gap-2">
@@ -149,14 +152,14 @@
         <div class="w-full flex flex-wrap justify-center items-center gap-x-2 gap-y-[7px] mt-[-25px] pb-[10px]">
 
           <!-- GUARDAR: escolhe a pasta de destino (por defeito: a do ficheiro original) -->
-          <button id="saveDirBtn" type="button" title="Escolher a pasta onde guardar os ficheiros comprimidos"
+          <button id="saveDirBtn" type="button" title="Choose where to save the compressed files" data-i18n-title="save_title"
             class="h-[44px] shrink-0 px-4 rounded-full bg-white text-black text-[12px] font-black uppercase tracking-wide flex items-center gap-2 cursor-pointer transition-all hover:brightness-105 active:scale-95 max-[588px]:order-2 max-[588px]:mt-[-14px]"
             style="filter: drop-shadow(0 6px 8px rgb(0 0 0 / 0.22));">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M3 7.5A1.5 1.5 0 014.5 6h4l2 2.5h9A1.5 1.5 0 0121 10v7.5a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.5v-10z" />
             </svg>
-            <span>Guardar</span>
+            <span data-i18n="save">Save</span>
           </button>
 
           <button id="compressBtn"
@@ -182,7 +185,7 @@
             <!-- Default Content: Text & Icon -->
             <div id="compressContent"
               class="absolute inset-0 flex items-center justify-center gap-2 text-white font-black text-base uppercase tracking-widest shadow-black drop-shadow-md">
-              <span>COMPRIMIR</span>
+              <span data-i18n="compress">COMPRESS</span>
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z">
                 </path>
@@ -197,14 +200,14 @@
           </button>
 
           <!-- IR PARA: revela no Finder/Explorador o ficheiro comprimido -->
-          <button id="revealBtn" type="button" title="Abrir a pasta do ficheiro comprimido"
+          <button id="revealBtn" type="button" title="Open the compressed file folder" data-i18n-title="go_to_title"
             class="h-[44px] shrink-0 px-4 rounded-full bg-white text-black text-[12px] font-black uppercase tracking-wide flex items-center gap-2 cursor-pointer transition-all hover:brightness-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed max-[588px]:order-3 max-[588px]:mt-[-14px]"
             style="filter: drop-shadow(0 6px 8px rgb(0 0 0 / 0.22));" disabled>
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
               <circle cx="10.5" cy="10.5" r="6.5" />
               <path stroke-linecap="round" d="M15.4 15.4L21 21" />
             </svg>
-            <span>Ir para</span>
+            <span data-i18n="go_to">Go to</span>
           </button>
         </div>
 
@@ -214,8 +217,8 @@
             <div id="progressBar" class="bg-fart-blue h-full w-0 transition-all duration-300"></div>
           </div>
           <div class="bg-white py-1 text-center">
-            <p id="statusMessage" class="text-[11px] text-gray-400 font-bold uppercase tracking-tighter">
-              0% de compressão...
+            <p id="statusMessage" class="text-[11px] text-gray-400 font-bold uppercase tracking-tighter" data-i18n="status_idle">
+              0% compression...
             </p>
           </div>
         </div>

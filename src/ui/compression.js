@@ -11,6 +11,7 @@ import UPNG from 'upng-js';
 import resize from '@jsquash/resize';
 import { readPsd } from 'ag-psd';
 import { initSlider } from './slider-component.js';
+import { t } from './i18n.js';
 
 let currentQuality = 75;
 // Último ficheiro criado com sucesso — alvo do botão "Ir para".
@@ -46,16 +47,16 @@ export function setupCompression() {
                 const chosen = await openDialog({
                     directory: true,
                     multiple: false,
-                    title: 'Escolher pasta de destino',
+                    title: t('choose_folder'),
                 });
                 if (!chosen) return; // cancelou — mantém o que estava
 
                 outputDir = chosen;
-                saveDirBtn.title = `A guardar em: ${chosen}`;
+                saveDirBtn.title = t('saving_to', chosen);
 
                 const statusMsg = document.getElementById('statusMessage');
                 if (statusMsg) {
-                    statusMsg.textContent = `A guardar em: ${chosen}`;
+                    statusMsg.textContent = t('saving_to', chosen);
                     setTimeout(() => { statusMsg.textContent = ''; }, 4000);
                 }
             } catch (e) {
@@ -80,7 +81,7 @@ export async function startCompression() {
     const files = getFiles();
 
     if (files.length === 0) {
-        statusMsg.textContent = "Please add some files first!";
+        statusMsg.textContent = t('add_files_first');
         statusMsg.classList.add('text-red-500');
         setTimeout(() => statusMsg.classList.remove('text-red-500'), 2000);
         return;
@@ -106,7 +107,7 @@ export async function startCompression() {
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            SQUEEZING...
+            ${t('squeezing')}
         `;
     }
 
@@ -136,7 +137,7 @@ export async function startCompression() {
         }
 
         // Update overall status
-        statusMsg.textContent = `A comprimir ${i + 1}/${total}...`;
+        statusMsg.textContent = t('compressing', i + 1, total);
         if (progressBar) progressBar.style.width = `${Math.round((i / total) * 100)}%`;
 
         try {
@@ -196,7 +197,7 @@ export async function startCompression() {
                     const aspectRatio = imgData.width / imgData.height;
                     const targetHeight = Math.max(1, Math.round(targetWidth / aspectRatio));
 
-                    statusMsg.textContent = `A redimensionar (${targetWidth}x${targetHeight})...`;
+                    statusMsg.textContent = t('resizing', targetWidth, targetHeight);
 
                     try {
                         // Use highest quality Lanczos3 for downscaling
@@ -207,7 +208,7 @@ export async function startCompression() {
                         });
                     } catch (err) {
                         console.error('Resize falhou, a usar o tamanho original:', err);
-                        statusMsg.textContent = `Erro ao redimensionar...`;
+                        statusMsg.textContent = t('resize_error');
                     }
                 }
 
@@ -302,7 +303,7 @@ export async function startCompression() {
 
     // Final progress
     if (progressBar) progressBar.style.width = '100%';
-    statusMsg.textContent = `Concluído! ${successCount}/${total} ficheiros comprimidos.`;
+    statusMsg.textContent = t('done', successCount, total);
     statusMsg.classList.add('text-green-500');
 
     compressBtn.disabled = false;

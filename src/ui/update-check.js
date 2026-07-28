@@ -2,6 +2,7 @@ import { fetch } from '@tauri-apps/plugin-http';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { getVersion } from '@tauri-apps/api/app';
 import { CONFIG_URL } from '../config.js';
+import { t } from './i18n.js';
 
 // ============================================================
 //  Verificação de nova versão.
@@ -59,7 +60,7 @@ function showUpdateBanner(cfg) {
   const btn = document.getElementById('updateBannerBtn');
 
   if (label) {
-    label.textContent = `Nova versão ${cfg.versao_mais_recente} disponível`;
+    label.textContent = t('update_available', cfg.versao_mais_recente);
   }
   if (btn && cfg.pagina_download) {
     btn.onclick = () => openUrl(cfg.pagina_download);

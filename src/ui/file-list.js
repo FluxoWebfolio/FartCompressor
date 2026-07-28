@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { t } from './i18n.js';
 
 let files = [];
 
@@ -117,7 +118,7 @@ export function updateFileRow(path, result) {
         }
     } else {
         if (compressedSizeEl) {
-            compressedSizeEl.innerHTML = `<span class="text-red-500 text-[9px]">Error</span>`;
+            compressedSizeEl.innerHTML = `<span class="text-red-500 text-[9px]">${t('error_short')}</span>`;
         }
         if (row) {
             row.dataset.compressed = 'true';

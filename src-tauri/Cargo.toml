@@ -1,6 +1,6 @@
 [package]
 name = "fartcompressor"
-version = "0.3.0"
+version = "1.0.0"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
