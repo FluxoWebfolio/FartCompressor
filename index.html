@@ -220,13 +220,12 @@
           </button>
         </div>
 
-        <!-- Progress Section: The absolute bottom of the screen -->
-        <div class="w-full">
-          <div class="bg-gray-200 h-2 w-full">
-            <div id="progressBar" class="bg-fart-blue h-full w-0 transition-all duration-300"></div>
-          </div>
-          <div class="bg-white py-1 text-center">
-            <p id="statusMessage" class="text-[11px] text-gray-400 font-bold uppercase tracking-tighter" data-i18n="status_idle">
+        <!-- Progress / status pill — largura do botão de comprimir, fundo #e1e6e6.
+             O progresso preenche a própria pílula (barra azul subtil por trás do texto). -->
+        <div class="w-full flex justify-center pt-[4px] pb-[10px]">
+          <div class="relative overflow-hidden rounded-full bg-[#e1e6e6] h-[40px] min-w-[278px] px-6 flex items-center justify-center">
+            <div id="progressBar" class="absolute inset-y-0 left-0 w-0 bg-fart-blue/25 transition-all duration-300"></div>
+            <p id="statusMessage" class="relative text-[11px] text-gray-500 font-bold uppercase tracking-tighter whitespace-nowrap" data-i18n="status_idle">
               0% compression...
             </p>
           </div>
