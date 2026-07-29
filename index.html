@@ -26,7 +26,11 @@
          nesta faixa; é aqui que se arrasta a janela). No Windows a barra nativa
          mantém-se e esta faixa serve só de topo da app. -->
     <div id="titlebar" data-tauri-drag-region
-      class="w-full h-[34px] shrink-0 bg-[#f0f5f5] z-30"></div>
+      class="w-full h-[34px] shrink-0 bg-[#f0f5f5] z-30 flex items-center justify-center">
+      <span class="pointer-events-none select-none text-[11px] font-black uppercase tracking-wider text-gray-400">
+        Fart Compressor <span class="text-fart-blue">V1.0</span>
+      </span>
+    </div>
 
     <!-- 1. Header Image (clicável: mostra as capas/skins anteriores) -->
     <div class="relative w-full h-[35%] max-h-[240px] bg-gray-200 overflow-hidden shrink-0">
