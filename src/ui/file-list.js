@@ -117,9 +117,13 @@ export function updateFileRow(path, result) {
             if (progressEl) progressEl.innerHTML = `<span class="text-green-600 font-bold">✓</span>`;
         }
     } else {
+        // Mostra a causa real ao passar o rato por cima (útil para diagnosticar).
+        const errMsg = result && result.error ? String(result.error) : '';
+        const safeErr = errMsg.replace(/"/g, '&quot;');
         if (compressedSizeEl) {
-            compressedSizeEl.innerHTML = `<span class="text-red-500 text-[9px]">${t('error_short')}</span>`;
+            compressedSizeEl.innerHTML = `<span class="text-red-500 text-[9px] cursor-help" title="${safeErr}">${t('error_short')}</span>`;
         }
+        if (errMsg) console.error('❌ Erro de compressão:', errMsg);
         if (row) {
             row.dataset.compressed = 'true';
             const progressEl = document.getElementById(`progress-${safeId}`);

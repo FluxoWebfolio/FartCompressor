@@ -40,16 +40,14 @@
       <rect id="label-quality" x="185.09" y="28.49" width="57.44" height="23.4" fill="none"/>
       <path id="slider-fill-right" d="M83.8,37.44h85.5c1.66,0,3,1.34,3,3h0c0,1.66-1.34,3-3,3h-85.5v-6Z" fill="#1a1a1a"/>
       <path id="slider-fill-left" d="M83.8,43.44h0c-1.66,0-3-1.34-3-3h0c0-1.66,1.34-3,3-3h0v6Z" fill="#0078ff"/>
+      <!-- Thumb sólido e cross-engine (sem mix-blend-mode nem gradientes userSpaceOnUse,
+           que renderizavam mal no WebView2/Windows). Círculos concêntricos centrados
+           em (83.8, 40.32) para o transform do slider-component continuar a funcionar. -->
       <g id="slider-thumb">
-        <circle cx="79.64" cy="44.98" r="11.06" fill="url(#radial-gradient)"/>
-        <g>
-          <circle cx="83.8" cy="40.32" r="7" fill="url(#linear-gradient)"/>
-          <circle cx="83.8" cy="40.32" r="7" fill="url(#linear-gradient-2)"/>
-          <circle cx="83.8" cy="40.32" r="7" fill="url(#linear-gradient-2)" mix-blend-mode="screen"/>
-          <circle cx="83.8" cy="40.32" r="4.95" fill="url(#linear-gradient-3)" mix-blend-mode="screen"/>
-          <circle cx="83.8" cy="40.32" r="4.02" fill="#1a1a1a"/>
-          <circle cx="83.8" cy="40.32" r="3.5" fill="url(#linear-gradient-4)" mix-blend-mode="screen"/>
-        </g>
+        <circle cx="83.8" cy="41.3" r="7.6" fill="#000" opacity="0.20"/>
+        <circle cx="83.8" cy="40.32" r="7.5" fill="#f4f6f6"/>
+        <circle cx="83.8" cy="40.32" r="7.5" fill="none" stroke="#c4cccc" stroke-width="0.7"/>
+        <circle cx="83.8" cy="40.32" r="3.4" fill="#1a1a1a"/>
       </g>
     </g>
   </g>

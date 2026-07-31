@@ -90,6 +90,7 @@ export async function startCompression() {
     const quality = currentQuality;
     const total = files.length;
     let successCount = 0;
+    let lastError = null;
 
     compressBtn.disabled = true;
 
@@ -297,14 +298,22 @@ export async function startCompression() {
             }
         } catch (e) {
             if (progressTimer) clearInterval(progressTimer);
-            updateFileRow(file.path, { success: false, error: String(e) });
+            lastError = String(e);
+            updateFileRow(file.path, { success: false, error: lastError });
         }
     }
 
     // Final progress
     if (progressBar) progressBar.style.width = '100%';
-    statusMsg.textContent = t('done', successCount, total);
-    statusMsg.classList.add('text-green-500');
+    if (successCount < total && lastError) {
+        // Houve falhas — mostra a causa real (truncada) em vez de só "concluído".
+        const short = lastError.length > 90 ? lastError.slice(0, 90) + '…' : lastError;
+        statusMsg.textContent = `${t('done', successCount, total)} — ${short}`;
+        statusMsg.classList.add('text-red-500');
+    } else {
+        statusMsg.textContent = t('done', successCount, total);
+        statusMsg.classList.add('text-green-500');
+    }
 
     compressBtn.disabled = false;
 
@@ -316,9 +325,10 @@ export async function startCompression() {
         setTimeout(() => btnOverlay.innerHTML = '', 300); // Clear after fade out
     }
 
+    // Erros ficam mais tempo no ecrã para dar para ler/tirar print.
     setTimeout(() => {
         statusMsg.classList.remove('text-green-500', 'text-red-500');
         statusMsg.textContent = "";
         if (progressBar) progressBar.style.width = '0%';
-    }, 3000);
+    }, (successCount < total && lastError) ? 9000 : 3000);
 }
