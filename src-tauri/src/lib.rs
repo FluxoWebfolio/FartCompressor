@@ -1,4 +1,5 @@
 use std::path::{Path, PathBuf};
+use std::process::Command;
 use serde::Serialize;
 
 // Escolhe a pasta de destino: a que o utilizador definiu no botão "Guardar",
