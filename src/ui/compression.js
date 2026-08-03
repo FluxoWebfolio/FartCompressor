@@ -1,6 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
 import { convertFileSrc } from '@tauri-apps/api/core';
-import { revealItemInDir } from '@tauri-apps/plugin-opener';
 import { open as openDialog } from '@tauri-apps/plugin-dialog';
 import * as avif from '@jsquash/avif';
 import * as jpeg from '@jsquash/jpeg';
@@ -32,9 +31,19 @@ export function setupCompression() {
         revealBtn.addEventListener('click', async () => {
             if (!lastOutputPath) return;
             try {
-                await revealItemInDir(lastOutputPath);
+                // Comando próprio (Rust): funciona em Windows, macOS e Linux.
+                await invoke('reveal_in_folder', { path: lastOutputPath });
             } catch (e) {
                 console.error('Não foi possível abrir a pasta:', e);
+                const statusMsg = document.getElementById('statusMessage');
+                if (statusMsg) {
+                    statusMsg.textContent = String(e);
+                    statusMsg.classList.add('text-red-500');
+                    setTimeout(() => {
+                        statusMsg.classList.remove('text-red-500');
+                        statusMsg.textContent = '';
+                    }, 6000);
+                }
             }
         });
     }

@@ -88,6 +88,49 @@ fn read_file_to_bytes(path: String) -> Result<Vec<u8>, String> {
     std::fs::read(&path).map_err(|e| format!("Failed to read source file: {}", e))
 }
 
+// Abre o explorador de ficheiros com o ficheiro selecionado ("Ir para").
+//
+// Implementado à mão (em vez de usar o plugin opener) porque o "scope" de
+// caminhos do plugin não casa com caminhos de Windows (C:\...), já que a barra
+// invertida é caractere de escape nos padrões glob — o botão não fazia nada.
+#[tauri::command]
+fn reveal_in_folder(path: String) -> Result<(), String> {
+    let p = Path::new(&path);
+    if !p.exists() {
+        return Err(format!("Ficheiro não encontrado: {}", path));
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        // O explorer.exe devolve código 1 mesmo quando corre bem — não validar o status.
+        Command::new("explorer")
+            .arg(format!("/select,{}", path))
+            .spawn()
+            .map_err(|e| format!("Falha ao abrir o Explorador: {}", e))?;
+        Ok(())
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("open")
+            .args(["-R", &path])
+            .spawn()
+            .map_err(|e| format!("Falha ao abrir o Finder: {}", e))?;
+        Ok(())
+    }
+
+    #[cfg(all(unix, not(target_os = "macos")))]
+    {
+        // Linux: não há forma universal de selecionar o ficheiro — abre a pasta.
+        let dir = p.parent().unwrap_or_else(|| Path::new("."));
+        Command::new("xdg-open")
+            .arg(dir)
+            .spawn()
+            .map_err(|e| format!("Falha ao abrir a pasta: {}", e))?;
+        Ok(())
+    }
+}
+
 #[tauri::command]
 async fn save_compressed_file(
     path: String,
@@ -290,7 +333,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![get_file_info, save_compressed_file, read_file_to_bytes, compress_video_ffmpeg, compress_pdf_ghostscript])
+        .invoke_handler(tauri::generate_handler![get_file_info, save_compressed_file, read_file_to_bytes, reveal_in_folder, compress_video_ffmpeg, compress_pdf_ghostscript])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

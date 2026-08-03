@@ -3,8 +3,14 @@
  * Inlines both Toggle_Off.svg and Toggle_On.svg into a wrapper.
  * Shows/hides each using visibility toggling on the top-level group IDs.
  */
-import svgOff from '../assets/Toggle_Off.svg?raw';
-import svgOn from '../assets/Toggle_On.svg?raw';
+import svgOffRaw from '../assets/Toggle_Off.svg?raw';
+import svgOnRaw from '../assets/Toggle_On.svg?raw';
+import { namespaceSvgIds } from './svg-utils.js';
+
+// Ambos os SVGs (e o botão COMPRIMIR) traziam ids iguais do Illustrator
+// ("linear-gradient"). Tornar os ids únicos evita que um roube o gradiente ao outro.
+const svgOff = namespaceSvgIds(svgOffRaw);
+const svgOn = namespaceSvgIds(svgOnRaw);
 
 /**
  * Initialise an SVG toggle inside a container element.
