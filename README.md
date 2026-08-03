@@ -34,14 +34,18 @@ lado nenhum — tudo acontece na tua máquina, offline.
 Vai a **[Releases](https://github.com/FluxoWebfolio/FartCompressor/releases/latest)**
 e descarrega o `fartcompressor_x64-setup.exe` (Windows).
 
-### ⚠️ Aviso do Windows na primeira abertura
+### ⚠️ Avisos do Windows
 
 Como a app ainda não tem assinatura de código (é um projeto indie), o Windows
-mostra um ecrã azul **"O Windows protegeu o seu PC" (SmartScreen)**. É normal e
-não significa que haja algo de errado:
+não a "conhece" e avisa. É normal e não significa que haja algo de errado:
 
-1. Clica em **"Mais informações"**
-2. Clica em **"Executar mesmo assim"**
+- **Ao descarregar:** o browser costuma dizer que o ficheiro **não é descarregado
+  com frequência** → escolhe *Manter* / *Manter mesmo assim*.
+- **Ao instalar:** se aparecer o ecrã azul **"O Windows protegeu o seu PC"** →
+  clica em **Mais informações** e depois em **Executar mesmo assim**.
+
+(Testado em Windows 10: o aviso aparece ao descarregar e a instalação segue
+normalmente depois de confirmares.)
 
 **Não confies só na minha palavra** — o código está todo aqui à vista, e podes
 passar o instalador em [virustotal.com](https://www.virustotal.com) antes de o
