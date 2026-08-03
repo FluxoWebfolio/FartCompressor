@@ -103,9 +103,17 @@ fn reveal_in_folder(path: String) -> Result<(), String> {
 
     #[cfg(target_os = "windows")]
     {
+        use std::os::windows::process::CommandExt;
+
+        // O explorer exige exatamente `/select,"C:\caminho\ficheiro.ext"`.
+        // Com .arg() o Rust põe aspas à volta do argumento INTEIRO
+        // (`"/select,C:\..."`), o explorer não percebe e abre a pasta por
+        // omissão (Documentos) em vez da pasta do ficheiro. raw_arg passa a
+        // linha de comando tal e qual, com as aspas no sítio certo.
+        let win_path = path.replace('/', "\\");
         // O explorer.exe devolve código 1 mesmo quando corre bem — não validar o status.
         Command::new("explorer")
-            .arg(format!("/select,{}", path))
+            .raw_arg(format!("/select,\"{}\"", win_path))
             .spawn()
             .map_err(|e| format!("Falha ao abrir o Explorador: {}", e))?;
         Ok(())
